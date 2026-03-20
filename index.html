@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NCLEX Mastery Lab — Part 3: Cases, Quizzes & Rapid Review</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#dc2626;--red-l:#fef2f2;--blue:#1d4ed8;--blue-l:#eff6ff;
+  --green:#15803d;--green-l:#f0fdf4;--orange:#c2410c;--orange-l:#fff7ed;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--pink:#be185d;--pink-l:#fdf2f8;
+  --teal:#0f766e;--teal-l:#f0fdfa;--amber:#b45309;--amber-l:#fffbeb;
+  --border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1);--r:12px;--r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+h1,h2,h3,h4{font-family:'DM Serif Display',serif;line-height:1.2}
+/* HEADER */
+#hdr{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+#hdr h1{font-size:clamp(.9rem,2vw,1.2rem);font-family:'DM Sans',sans-serif;font-weight:700}
+#hdr h1 em{font-style:normal;color:#38bdf8;font-family:'DM Serif Display',serif}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.part-badge{background:linear-gradient(90deg,#ec4899,#f97316);color:#fff;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.5px}
+.series-nav{display:flex;gap:6px}
+.snav{padding:4px 10px;border-radius:10px;font-size:.72rem;font-weight:700;border:none;cursor:pointer;color:#fff;background:rgba(255,255,255,.15);transition:background .15s;font-family:'DM Sans',sans-serif}
+.snav:hover{background:rgba(255,255,255,.28)}
+.snav.cur{background:rgba(236,72,153,.5)}
+/* NAV */
+#nav{background:#fff;border-bottom:1px solid var(--border);overflow-x:auto;white-space:nowrap;padding:0 16px;position:sticky;top:57px;z-index:190;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.nt{display:inline-block;padding:11px 15px;cursor:pointer;font-size:.82rem;font-weight:600;color:#64748b;border-bottom:3px solid transparent;transition:all .18s;user-select:none}
+.nt:hover{color:var(--blue);border-bottom-color:#93c5fd}
+.nt.active{color:var(--blue);border-bottom-color:var(--blue)}
+/* SECTIONS */
+.sec{display:none;padding:24px;max-width:1160px;margin:0 auto;animation:fi .3s ease}
+.sec.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-hd{font-size:clamp(1.4rem,3vw,1.9rem);color:#0f172a;margin-bottom:4px}
+.sec-sub{color:#64748b;margin-bottom:22px;font-size:.9rem;line-height:1.6}
+.sec-label{display:inline-block;background:var(--pink);color:#fff;padding:2px 10px;border-radius:4px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-family:'DM Sans',sans-serif}
+/* CARDS */
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:680px){.g2,.card-grid{grid-template-columns:1fr}}
+/* INFO BOXES */
+.ib{border-radius:var(--r-sm);padding:11px 14px;margin:8px 0;font-size:.86rem;line-height:1.65}
+.ib-red{background:var(--red-l);border-left:4px solid var(--red);color:#7f1d1d}
+.ib-blue{background:var(--blue-l);border-left:4px solid var(--blue);color:#1e3a8a}
+.ib-green{background:var(--green-l);border-left:4px solid var(--green);color:#14532d}
+.ib-purple{background:var(--purple-l);border-left:4px solid var(--purple);color:#4c1d95}
+.ib-amber{background:var(--amber-l);border-left:4px solid var(--amber);color:#78350f}
+.ib-teal{background:var(--teal-l);border-left:4px solid var(--teal);color:#134e4a}
+/* BADGES */
+.bdg{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700;letter-spacing:.3px;font-family:'DM Sans',sans-serif}
+.bdg-cardio{background:var(--red-l);color:var(--red)}.bdg-resp{background:var(--blue-l);color:var(--blue)}
+.bdg-neuro{background:var(--purple-l);color:var(--purple)}.bdg-renal{background:var(--teal-l);color:var(--teal)}
+.bdg-heme{background:var(--amber-l);color:var(--amber)}.bdg-psych{background:var(--pink-l);color:var(--pink)}
+.bdg-endo{background:var(--green-l);color:var(--green)}.bdg-gi{background:var(--orange-l);color:var(--orange)}
+/* LABELS */
+.lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;margin-bottom:3px;margin-top:10px;font-family:'DM Sans',sans-serif}
+.lbl:first-child{margin-top:0}
+ul.sl{list-style:none;padding:0}
+ul.sl li{padding:3px 0 3px 18px;position:relative;font-size:.86rem;line-height:1.55}
+ul.sl li::before{content:"▸";position:absolute;left:0;color:var(--blue);font-size:.75rem;top:5px}
+/* TAGS */
+.tag{display:inline-block;padding:2px 7px;border-radius:7px;font-size:.7rem;font-weight:600;margin:2px;font-family:'DM Sans',sans-serif}
+.tag-red{background:var(--red-l);color:var(--red)}.tag-blue{background:var(--blue-l);color:var(--blue)}
+.tag-green{background:var(--green-l);color:var(--green)}.tag-purple{background:var(--purple-l);color:var(--purple)}
+.tag-amber{background:var(--amber-l);color:var(--amber)}.tag-pink{background:var(--pink-l);color:var(--pink)}
+hr.dv{border:none;border-top:1px solid var(--border);margin:16px 0}
+/* SCORE BANNER */
+.score-banner{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border-radius:var(--r);padding:16px 22px;display:flex;align-items:center;gap:22px;margin-bottom:22px;flex-wrap:wrap}
+.score-num{font-size:2.6rem;font-weight:800;font-family:'DM Serif Display',serif;line-height:1}
+.score-lbl{font-size:.82rem;opacity:.85;margin-top:2px}
+.prog-bar{width:100%;height:9px;background:rgba(255,255,255,.25);border-radius:5px;overflow:hidden;margin-top:7px}
+.prog-fill{height:100%;border-radius:5px;background:#fff;transition:width .55s ease}
+.reset-btn{background:rgba(255,255,255,.18);color:#fff;border:2px solid rgba(255,255,255,.3);padding:8px 18px;border-radius:18px;font-weight:700;cursor:pointer;font-size:.82rem;font-family:'DM Sans',sans-serif;transition:background .15s}
+.reset-btn:hover{background:rgba(255,255,255,.28)}
+/* CASE CARDS */
+.case-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
+.case-hd{padding:14px 20px;color:#fff}
+.case-num{font-size:.68rem;font-weight:700;letter-spacing:.6px;opacity:.82;font-family:'DM Sans',sans-serif;text-transform:uppercase;margin-bottom:4px}
+.case-title{font-family:'DM Serif Display',serif;font-size:1.08rem;line-height:1.3}
+.case-body{padding:18px 20px}
+.case-stem{font-size:.9rem;line-height:1.75;margin-bottom:12px;color:#334155}
+.vitals-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.vital{background:#f8fafc;border-radius:8px;padding:5px 12px;font-size:.79rem;font-weight:600;border:1px solid var(--border)}
+.vital strong{color:var(--blue)}
+.q-stem{background:var(--blue-l);border-radius:var(--r-sm);padding:12px 15px;margin:14px 0 10px;font-size:.9rem;font-weight:700;color:#1e3a8a;border-left:4px solid var(--blue);line-height:1.5}
+/* ANSWER OPTIONS */
+.opt{display:block;width:100%;text-align:left;padding:10px 15px;margin:6px 0;border-radius:var(--r-sm);border:2px solid var(--border);background:#fff;cursor:pointer;font-size:.88rem;transition:all .18s;font-family:'DM Sans',sans-serif;line-height:1.5}
+.opt:hover:not(:disabled){border-color:var(--blue);background:var(--blue-l)}
+.opt.correct{border-color:var(--green)!important;background:var(--green-l)!important;color:#14532d;font-weight:700}
+.opt.wrong{border-color:var(--red)!important;background:var(--red-l)!important;color:#7f1d1d}
+.opt.show-correct{border-color:var(--green)!important;background:var(--green-l)!important}
+/* RATIONALE */
+.rationale{display:none;margin-top:16px;animation:fi .25s ease}
+.rationale.show{display:block}
+.rat-correct{background:var(--green-l);border-radius:var(--r-sm);padding:13px 15px;font-size:.87rem;margin-bottom:10px;border-left:4px solid var(--green);line-height:1.72}
+.rat-box{background:#f8fafc;border-radius:var(--r-sm);padding:10px 13px;font-size:.83rem;margin-bottom:7px;border-left:3px solid #cbd5e1;line-height:1.6;color:#475569}
+/* CONCEPT CHECK */
+.cc-section{margin-bottom:30px}
+.cc-hdr{font-size:.95rem;font-weight:700;margin-bottom:14px;padding:11px 15px;background:linear-gradient(90deg,#eff6ff,#f0fdf4);border-radius:var(--r-sm);border-left:4px solid var(--blue);color:#1e293b}
+.cc-q{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin-bottom:12px}
+.q-text{font-size:.92rem;font-weight:600;margin-bottom:13px;line-height:1.62;color:#1e293b}
+/* RAPID REVIEW */
+.filter-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.fbtn{padding:5px 14px;border-radius:14px;border:2px solid var(--border);background:#fff;font-size:.76rem;font-weight:600;cursor:pointer;color:#64748b;transition:all .18s;font-family:'DM Sans',sans-serif}
+.fbtn:hover{border-color:var(--blue);color:var(--blue)}
+.fbtn.active-all{background:#0f172a;border-color:#0f172a;color:#fff}
+.fbtn.active-psych{background:var(--pink);border-color:var(--pink);color:#fff}
+.fbtn.active-endo{background:var(--green);border-color:var(--green);color:#fff}
+.fbtn.active-gi{background:var(--orange);border-color:var(--orange);color:#fff}
+.fbtn.active-cardio{background:var(--red);border-color:var(--red);color:#fff}
+.fbtn.active-resp{background:var(--blue);border-color:var(--blue);color:#fff}
+.fbtn.active-neuro{background:var(--purple);border-color:var(--purple);color:#fff}
+.fbtn.active-renal{background:var(--teal);border-color:var(--teal);color:#fff}
+.fbtn.active-heme{background:var(--amber);border-color:var(--amber);color:#fff}
+.rr-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;transition:transform .18s;border-top:4px solid #ccc}
+.rr-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.rr-hd{padding:11px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.rr-name{font-weight:700;font-size:.88rem;flex:1}
+.rr-body{padding:12px 14px}
+.rr-row{display:flex;gap:7px;align-items:flex-start;margin-bottom:7px;font-size:.8rem;line-height:1.48}
+.rr-icon{font-size:.9rem;flex-shrink:0;margin-top:1px}
+/* FLASHCARDS */
+.fc-wrap{perspective:1000px;cursor:pointer;height:175px;max-width:500px;margin:0 auto 10px}
+.fc-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s}
+.fc-inner.flipped{transform:rotateY(180deg)}
+.fc-front,.fc-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center}
+.fc-front{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff}
+.fc-back{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;transform:rotateY(180deg)}
+.fc-label{font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;opacity:.75;margin-bottom:8px;font-family:'DM Sans',sans-serif}
+.fc-main{font-size:.95rem;font-weight:700;line-height:1.5;font-family:'DM Serif Display',serif}
+.fc-hint{font-size:.72rem;opacity:.7;margin-top:8px;font-style:italic}
+.fc-nav-row{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.fc-nav-btn{background:var(--blue);color:#fff;border:none;padding:8px 20px;border-radius:18px;font-weight:700;cursor:pointer;font-size:.83rem;font-family:'DM Sans',sans-serif;transition:background .15s}
+.fc-nav-btn:hover{background:#1e40af}
+.fc-counter{background:#fff;border-radius:18px;padding:8px 18px;box-shadow:var(--shadow);font-size:.83rem;font-weight:600;color:#1e293b}
+/* STAT CHIPS */
+.stat-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.stat-chip{background:#fff;border-radius:var(--r-sm);padding:10px 16px;box-shadow:var(--shadow);text-align:center;flex:1;min-width:80px}
+.stat-num{font-size:1.55rem;font-weight:800;font-family:'DM Serif Display',serif}
+.stat-lbl{font-size:.68rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <h1>🩺 <em>NCLEX</em> Clinical Judgment Mastery Lab</h1>
+  <div class="hdr-right">
+    <div class="part-badge">PART 3 OF 3</div>
+    <div class="series-nav">
+      <button class="snav" onclick="window.location='nclex_part1.html'">← Part 1</button>
+      <button class="snav" onclick="window.location='nclex_part2.html'">← Part 2</button>
+      <button class="snav cur">Part 3</button>
+    </div>
+  </div>
+</header>
+
+<nav id="nav">
+  <span class="nt active" data-s="s8">📋 Case Studies</span>
+  <span class="nt" data-s="s9">✅ Concept Checks</span>
+  <span class="nt" data-s="s10">⚡ Rapid Review</span>
+</nav>
+
+<!-- ══════════ SECTION 8: CASE STUDIES ══════════ -->
+<div class="sec active" id="s8">
+  <div class="sec-label">Section 8</div>
+  <h2 class="sec-hd">Case Studies</h2>
+  <p class="sec-sub">25 NCLEX-style cases with progressive reveal, full rationales, and scoring across all body systems. Choose your answer for immediate feedback.</p>
+  <div class="score-banner">
+    <div>
+      <div class="score-num" id="cs-score">0</div>
+      <div class="score-lbl">Correct Answers</div>
+    </div>
+    <div style="flex:1">
+      <div style="font-size:.82rem;opacity:.85;margin-bottom:5px"><span id="cs-att">0</span> of <span id="cs-tot">25</span> attempted</div>
+      <div class="prog-bar"><div class="prog-fill" id="cs-prog" style="width:0%"></div></div>
+    </div>
+    <button class="reset-btn" onclick="resetCases()">↺ Reset All</button>
+  </div>
+  <div id="cases-wrap"></div>
+</div>
+
+<!-- ══════════ SECTION 9: CONCEPT CHECKS ══════════ -->
+<div class="sec" id="s9">
+  <div class="sec-label">Section 9</div>
+  <h2 class="sec-hd">Concept Checks</h2>
+  <p class="sec-sub">30 quick-fire questions across all systems — clinical judgment, medication safety, priority actions, and NCLEX traps. Immediate feedback on every answer.</p>
+  <div class="score-banner">
+    <div>
+      <div class="score-num" id="cc-score">0</div>
+      <div class="score-lbl">Quiz Score</div>
+    </div>
+    <div style="flex:1">
+      <div style="font-size:.82rem;opacity:.85;margin-bottom:5px"><span id="cc-att">0</span> of <span id="cc-tot">0</span> answered</div>
+      <div class="prog-bar"><div class="prog-fill" id="cc-prog" style="width:0%"></div></div>
+    </div>
+    <button class="reset-btn" onclick="resetCC()">↺ Reset All</button>
+  </div>
+  <div id="cc-wrap"></div>
+</div>
+
+<!-- ══════════ SECTION 10: RAPID REVIEW ══════════ -->
+<div class="sec" id="s10">
+  <div class="sec-label">Section 10</div>
+  <h2 class="sec-hd">⚡ Rapid Review Dashboard</h2>
+  <p class="sec-sub">One-glance exam-day cards for all 66 diseases across all three parts. Filter by system, then drill with flashcards.</p>
+  <div class="stat-row">
+    <div class="stat-chip"><div class="stat-num" style="color:var(--pink)">10</div><div class="stat-lbl">Psych</div></div>
+    <div class="stat-chip"><div class="stat-num" style="color:var(--green)">13</div><div class="stat-lbl">Endocrine</div></div>
+    <div class="stat-chip"><div class="stat-num" style="color:var(--orange)">11</div><div class="stat-lbl">GI</div></div>
+    <div class="stat-chip"><div class="stat-num" style="color:var(--red)">9</div><div class="stat-lbl">Cardiac</div></div>
+    <div class="stat-chip"><div class="stat-num" style="color:var(--blue)">6</div><div class="stat-lbl">Resp</div></div>
+    <div class="stat-chip"><div class="stat-num" style="color:var(--purple)">6</div><div class="stat-lbl">Neuro</div></div>
+    <div class="stat-chip"><div class="stat-num" style="color:var(--teal)">4</div><div class="stat-lbl">Renal</div></div>
+    <div class="stat-chip"><div class="stat-num" style="color:var(--amber)">6</div><div class="stat-lbl">Heme</div></div>
+  </div>
+  <div class="filter-row" id="rr-filter-row"></div>
+  <div id="rr-grid" class="card-grid"></div>
+  <hr class="dv" style="margin:28px 0">
+  <h3 style="color:var(--blue);margin-bottom:6px">🃏 Flashcard Drill</h3>
+  <p style="color:#64748b;font-size:.85rem;margin-bottom:16px">Click the card to flip and reveal the answer. Navigate through all diseases.</p>
+  <div id="fc-area"></div>
+  <div class="fc-nav-row">
+    <button class="fc-nav-btn" onclick="prevFC()">← Previous</button>
+    <span class="fc-counter" id="fc-counter">Card 1 / 1</span>
+    <button class="fc-nav-btn" onclick="nextFC()">Next →</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CASE STUDIES DATA (25 cases)
+// ══════════════════════════════════════════
+const CASES=[
+{id:'c1',num:1,sys:'cardio',bg:'linear-gradient(135deg,#dc2626,#b91c1c)',title:'The Breathless Patient',
+ stem:'A 68-year-old with known heart failure is admitted for worsening dyspnea. He reports sleeping on 3 pillows and waking up gasping. He has gained 5 lbs in 3 days. VS: BP 158/96, HR 102, RR 24, SpO₂ 89% on room air. Bilateral crackles are heard. JVD is present.',
+ vitals:[['BP','158/96'],['HR','102'],['RR','24'],['SpO₂','89% RA'],['Wt gain','5 lbs/3 days']],
+ q:'What is the PRIORITY nursing action?',
+ opts:['A. Administer IV furosemide as ordered','B. Place the patient in HIGH FOWLER\'S position immediately','C. Obtain a 12-lead EKG','D. Restrict fluids to 1,500 mL/day'],
+ ans:1,
+ rationale:'B is correct. HIGH FOWLER\'S position is the FIRST priority — it immediately reduces preload (venous return), decreases work of breathing, and improves oxygenation. This is an independent nursing action requiring no physician order. Furosemide (A) requires an order and takes 30–60 min to act. EKG (C) and fluid restriction (D) are important but secondary to this immediate breathing emergency.',
+ wr:{'0':'Furosemide requires an order and takes time. Positioning is immediate and requires no order.','2':'EKG is important to rule out MI but is not the first priority when a patient cannot breathe.','3':'Fluid restriction is long-term management — not an immediate emergency intervention.'},
+ clue:'Orthopnea + JVD + bilateral crackles + SpO₂ 89% = acute HF exacerbation.',
+ think:'ABCs: breathing compromised → position upright first to reduce preload instantly, then diuretics.',
+ danger:'SpO₂ 89% can rapidly progress to respiratory failure and pulmonary edema'},
+
+{id:'c2',num:2,sys:'cardio',bg:'linear-gradient(135deg,#1d4ed8,#1e40af)',title:'The Chest Pain Call',
+ stem:'A 55-year-old male: chest pressure "like someone is sitting on my chest" for 30 minutes, radiating to his left jaw. He is diaphoretic and pale. VS: BP 104/68, HR 112, SpO₂ 94%.',
+ vitals:[['BP','104/68'],['HR','112'],['SpO₂','94%'],['Duration','30 min'],['Radiation','Left jaw']],
+ q:'Which nursing action should be performed FIRST?',
+ opts:['A. Administer aspirin 325 mg (chew)','B. Obtain a 12-lead EKG immediately','C. Apply supplemental oxygen at 2 L/min','D. Establish IV access and draw cardiac enzymes'],
+ ans:1,
+ rationale:'B is correct. The 12-lead EKG must be obtained within 10 MINUTES of chest pain onset — it determines the entire treatment pathway. STEMI on EKG → immediately activate the cath lab. Aspirin (A) is critical and should follow almost simultaneously, but the EKG defines whether this is STEMI/NSTEMI. O₂ (C) is only needed if SpO₂ <90%. IV access (D) follows the EKG.',
+ wr:{'0':'Aspirin is important but the EKG comes first — it determines if cath lab must be activated immediately.','2':'SpO₂ is 94% — O₂ is only given if SpO₂ <90% (excess O₂ may worsen infarct size).','3':'IV access is important but comes after the EKG which defines the treatment pathway.'},
+ clue:'Crushing chest pain + radiation + diaphoresis + pallor = classic MI presentation.',
+ think:'STEMI = Time is muscle. EKG in 10 min → if STEMI → activate cath lab. Door-to-balloon <90 min.',
+ danger:'Hypotension (104/68) — cardiogenic shock may be developing; monitor closely'},
+
+{id:'c3',num:3,sys:'neuro',bg:'linear-gradient(135deg,#7c3aed,#6d28d9)',title:'The Sudden Weakness',
+ stem:'A 72-year-old with atrial fibrillation: sudden right arm weakness and cannot say her name clearly. Her husband states symptoms began 40 minutes ago. VS: BP 182/104, HR 88, INR 1.4. Blood glucose: 98 mg/dL.',
+ vitals:[['BP','182/104'],['INR','1.4'],['Glucose','98'],['Onset','40 min ago'],['Deficits','Right arm + speech']],
+ q:'After activating the stroke team, which action is MOST important next?',
+ opts:['A. Administer aspirin 325 mg immediately','B. Obtain CT head WITHOUT contrast urgently','C. Lower BP to <140/90 with IV labetalol immediately','D. Insert a urinary catheter for strict I&O'],
+ ans:1,
+ rationale:'B is correct. CT head without contrast MUST be done IMMEDIATELY before any treatment to rule out hemorrhagic stroke. Giving tPA to a hemorrhagic stroke patient would be fatal — it worsens the bleed. CT takes minutes and is mandatory. Aspirin (A) must not be given before ruling out hemorrhage. Aggressive BP reduction (C) is wrong — permissive hypertension maintains perfusion in ischemic stroke. Catheter (D) is not a priority.',
+ wr:{'0':'Aspirin is contraindicated until hemorrhage is excluded by CT head.','2':'Permissive hypertension (up to 220/120) maintains brain perfusion in ischemic stroke. Only lower to <185/110 if giving tPA.','3':'Catheter insertion is not a priority in acute stroke management.'},
+ clue:'Sudden unilateral weakness + speech difficulty + AFib = stroke until proven otherwise.',
+ think:'CT head first → if no hemorrhage → tPA if within 3–4.5h → aspirin (but not with tPA for 24h).',
+ danger:'INR 1.4 — if hemorrhagic stroke, anticoagulation reversal may be urgently needed'},
+
+{id:'c4',num:4,sys:'resp',bg:'linear-gradient(135deg,#0f766e,#0d9488)',title:'The Wheezing Child',
+ stem:'A 10-year-old with known asthma: audible wheezing, prolonged expiration, SpO₂ 91%. She has used her rescue inhaler 4 times in the past 2 hours without relief. RR 32. She is speaking in 2–3 word sentences.',
+ vitals:[['SpO₂','91%'],['RR','32'],['Albuterol','4× in 2 hours'],['Speech','2–3 word sentences']],
+ q:'Which finding is MOST concerning and indicates the HIGHEST urgency?',
+ opts:['A. SpO₂ of 91%','B. Use of accessory muscles','C. Speaking only in 2–3 word sentences','D. Failure to respond to 4 doses of albuterol'],
+ ans:2,
+ rationale:'C is correct. Inability to speak in full sentences directly grades the severity of airflow obstruction. This indicates the patient is near impending respiratory arrest. Asthma severity: full sentences = mild; short sentences = moderate; words only = severe; cannot speak = pre-arrest. Silent chest (no wheeze) would be even worse — no air movement = pre-respiratory arrest. All options are concerning, but speech limitation most precisely quantifies functional severity.',
+ wr:{'0':'SpO₂ 91% is concerning and needs treatment, but speech limitation more precisely grades the severity of obstruction.','1':'Accessory muscle use indicates distress but is expected in exacerbation. Speech grades the severity better.','3':'Albuterol failure signals need for escalation but speech limitation quantifies the severity of functional impairment.'},
+ clue:'Speech limitation grades asthma severity. Silent chest = no air movement = pre-arrest.',
+ think:'Asthma scale: full sentences → moderate → words only → silent chest (most dangerous).',
+ danger:'Silent chest in asthma = pre-respiratory arrest — more dangerous than any audible wheeze'},
+
+{id:'c5',num:5,sys:'endo',bg:'linear-gradient(135deg,#15803d,#166534)',title:'The DKA Patient',
+ stem:'A 19-year-old with T1DM arrives drowsy, with fruity breath and deep rapid respirations. Glucose: 512 mg/dL. pH: 7.22. K+: 3.8 mEq/L. The nurse is about to start the insulin infusion.',
+ vitals:[['Glucose','512 mg/dL'],['pH','7.22'],['K+','3.8 mEq/L'],['Breathing','Deep and rapid (Kussmaul)']],
+ q:'Which action is MOST important BEFORE starting the insulin infusion?',
+ opts:['A. Initiate potassium replacement intravenously','B. Confirm that IV access is patent','C. Wait until blood glucose drops below 250 mg/dL','D. Obtain the physician\'s cosignature on the order'],
+ ans:0,
+ rationale:'A is correct. K+ must be checked and managed BEFORE insulin is started. The rule: K+ <3.5 = HOLD insulin and replace K+ first (fatal arrhythmia risk). K+ 3.5–5.5 = give K+ concurrently with insulin. K+ >5.5 = give insulin first. At K+ 3.8 mEq/L (low-normal), concurrent K+ replacement MUST begin before/with insulin to prevent life-threatening hypokalemia as insulin drives K+ into cells.',
+ wr:{'1':'IV access confirmation is routine — it is not the DKA-specific safety check before insulin.','2':'We never wait for glucose to drop before starting insulin in DKA — the acidosis requires treatment now.','3':'The order should be obtained before medication preparation.'},
+ clue:'DKA + insulin = K+ rapidly drops into cells = hypokalemia = fatal arrhythmia if K+ not replaced.',
+ think:'DKA: Fluids first → check K+ → insulin (only when K+ ≥3.5) → concurrent K+ replacement throughout.',
+ danger:'Hypokalemia from insulin in DKA is a preventable cause of cardiac arrest'},
+
+{id:'c6',num:6,sys:'psych',bg:'linear-gradient(135deg,#be185d,#9d174d)',title:'The Withdrawn Teen',
+ stem:'A 16-year-old is admitted for weight loss. BMI: 14.8. She is wearing a long-sleeved sweater at 75°F. She states "I don\'t know why everyone is so worried — I still need to lose more weight." Fine downy hair is noted on her forearms and back. VS: HR 47, BP 88/54, T 96.8°F.',
+ vitals:[['HR','47 bpm'],['BP','88/54'],['Temp','96.8°F'],['BMI','14.8']],
+ q:'Which assessment finding requires the MOST immediate nursing action?',
+ opts:['A. Disturbed body image ("I still need to lose weight")','B. Fine downy hair (lanugo) on forearms and back','C. Heart rate of 47 bpm','D. Wearing a long-sleeved sweater in 75°F weather'],
+ ans:2,
+ rationale:'C is correct. HR of 47 bpm (bradycardia) indicates cardiovascular compromise and risk for life-threatening arrhythmia — this requires immediate cardiac monitoring and EKG. In anorexia nervosa, bradycardia + hypotension + hypothermia form a triad of cardiovascular collapse risk. Disturbed body image (A) is the hallmark psychological finding but not immediately life-threatening. Lanugo (B) confirms severe malnutrition but is not acutely dangerous. Overdressing (D) indicates cold intolerance.',
+ wr:{'0':'Disturbed body image is characteristic of anorexia but is not the most immediately life-threatening finding.','1':'Lanugo confirms severe malnutrition but is not acutely dangerous — the cardiac finding is more urgent.','3':'Overdressing indicates cold intolerance from low metabolic rate — not an emergency.'},
+ clue:'Anorexia: Bradycardia + hypotension + hypothermia = cardiovascular collapse triad.',
+ think:'Anorexia priorities: cardiac monitoring → electrolytes → EKG → SLOW nutritional rehabilitation.',
+ danger:'QTc prolongation + hypokalemia in anorexia = ventricular arrhythmia and sudden death'},
+
+{id:'c7',num:7,sys:'endo',bg:'linear-gradient(135deg,#b45309,#92400e)',title:'Post-Thyroid Surgery',
+ stem:'A patient is 36 hours post-thyroidectomy. She reports tingling around her mouth and in her fingertips with muscle cramping. When the nurse taps over her cheekbone, the corner of her mouth twitches. Serum calcium: 7.2 mg/dL (normal 8.5–10.5).',
+ vitals:[['Serum Ca²+','7.2 mg/dL (LOW)'],['Chvostek\'s sign','Positive'],['Symptom','Perioral tingling + cramps']],
+ q:'Which medication should the nurse have immediately available at the bedside?',
+ opts:['A. Magnesium sulfate IV','B. Potassium chloride IV','C. Calcium gluconate IV','D. Sodium bicarbonate IV'],
+ ans:2,
+ rationale:'C is correct. Calcium gluconate IV must be immediately available at the bedside for ALL post-thyroidectomy patients. This patient has confirmed hypocalcemia (Ca 7.2 mg/dL) + positive Chvostek\'s sign + symptomatic tingling. The immediate danger is LARYNGOSPASM — complete airway obstruction. IV calcium gluconate is the emergency treatment. The other options (A, B, D) do not treat hypocalcemia.',
+ wr:{'0':'Magnesium may be supplemented in some cases, but calcium gluconate is the priority for symptomatic hypocalcemia.','1':'Potassium is not indicated here — this is a calcium deficiency emergency.','3':'Sodium bicarbonate does not treat hypocalcemia.'},
+ clue:'Post-thyroid surgery + perioral tingling + Chvostek\'s sign = hypoparathyroidism → hypocalcemia.',
+ think:'Hypocalcemia → Chvostek\'s → Trousseau\'s → tetany → laryngospasm → AIRWAY OBSTRUCTION.',
+ danger:'Laryngospasm from hypocalcemia = complete airway obstruction = respiratory arrest'},
+
+{id:'c8',num:8,sys:'gi',bg:'linear-gradient(135deg,#c2410c,#9a3412)',title:'The Abdominal Migration',
+ stem:'A 22-year-old male: pain began around his navel 8 hours ago and has migrated to his right lower abdomen. He has nausea but no vomiting. Temperature 38.7°C. WBC 16,200. Rebound tenderness at McBurney\'s point. Pain 7/10.',
+ vitals:[['Temp','38.7°C'],['WBC','16,200'],['Pain location','RLQ (McBurney\'s)'],['Rebound','Positive']],
+ q:'Which nursing intervention is CONTRAINDICATED for this patient?',
+ opts:['A. Administering IV opioid analgesics as ordered','B. Keeping the patient NPO','C. Applying a heating pad to the abdomen for comfort','D. Obtaining IV access for fluid administration'],
+ ans:2,
+ rationale:'C is correct (this is the CONTRAINDICATED action). Heat application to the abdomen is absolutely contraindicated in suspected appendicitis — it increases blood flow to the area and can accelerate perforation. IV opioids (A) are appropriate and do NOT mask signs of perforation — the outdated practice of withholding analgesia has been disproven. NPO (B) is correct pre-operative preparation. IV access (D) is appropriate.',
+ wr:{'0':'IV opioids are appropriate. The myth that analgesics mask signs of perforation has been disproven.','1':'NPO is correct pre-operative preparation for surgery.','3':'IV access is appropriate for fluid and medication delivery.'},
+ clue:'Pain migrating periumbilical → RLQ + fever + elevated WBC + rebound tenderness = appendicitis.',
+ think:'Appendicitis: NPO + opioids (appropriate) + surgical prep. NO laxatives, NO enemas, NO heat.',
+ danger:'Heat on suspected appendicitis can promote perforation → peritonitis → sepsis → death'},
+
+{id:'c9',num:9,sys:'cardio',bg:'linear-gradient(135deg,#7c3aed,#6d28d9)',title:'The Positional Chest Pain',
+ stem:'A 32-year-old man: sharp chest pain × 3 days, worse when lying flat, dramatically better when leaning forward. Temperature 38.2°C. EKG shows diffuse saddle-shaped ST elevation in all leads + PR depression. Troponin is mildly elevated.',
+ vitals:[['Temp','38.2°C'],['Pain','Sharp, positional'],['EKG','Diffuse saddle ST + PR depression'],['Troponin','Mildly elevated']],
+ q:'Which treatment is MOST appropriate for this patient?',
+ opts:['A. Emergent cardiac catheterization','B. NSAIDs + colchicine','C. Anticoagulation with IV heparin','D. Beta-blockers as the first medication'],
+ ans:1,
+ rationale:'B is correct. This is classic pericarditis: sharp pain better leaning forward + pericardial friction rub + diffuse saddle-shaped ST elevation in ALL leads + PR depression + fever. First-line treatment is NSAIDs (ibuprofen) + colchicine (reduces recurrence by 50%). Cardiac catheterization (A) is for STEMI with localized ST changes in a vascular territory — not diffuse. Heparin (C) is contraindicated (increases hemorrhagic effusion risk). Beta-blockers (D) are not indicated.',
+ wr:{'0':'Cath is for STEMI with localized ST changes. Pericarditis has DIFFUSE saddle-shaped ST in all leads — not a vascular territory.','2':'Heparin is CONTRAINDICATED in pericarditis — it increases the risk of hemorrhagic pericardial effusion.','3':'Beta-blockers are not a treatment for pericarditis.'},
+ clue:'Sharp pain + BETTER leaning forward + diffuse saddle-shaped ST + friction rub = pericarditis, NOT MI.',
+ think:'Positional relief when leaning forward = pericarditis. NSAIDs + colchicine. Avoid steroids (increase recurrence).',
+ danger:'Pericarditis can progress to cardiac tamponade — monitor for Beck\'s triad'},
+
+{id:'c10',num:10,sys:'neuro',bg:'linear-gradient(135deg,#0f172a,#1e293b)',title:'The Active Seizure',
+ stem:'A hospitalized patient is witnessed by the nurse beginning a tonic-clonic seizure. The seizure has now been occurring for 7 minutes without stopping.',
+ vitals:[['Seizure duration','7 minutes and ongoing'],['Type','Tonic-clonic'],['Status','Has not stopped']],
+ q:'What is the PRIORITY nursing intervention at this point?',
+ opts:['A. Insert a padded tongue blade to prevent tongue-biting','B. Restrain the patient\'s extremities to prevent injury','C. Administer IV lorazepam as ordered for status epilepticus','D. Place the patient in the prone position for airway protection'],
+ ans:2,
+ rationale:'C is correct. A seizure lasting >5 minutes without stopping = STATUS EPILEPTICUS = medical emergency requiring IV benzodiazepine (lorazepam) immediately. Never insert a tongue blade (A) — breaks teeth, causes aspiration and injury. Never restrain (B) — causes fractures. Prone position (D) is dangerous — use LATERAL (side) position AFTER the seizure ends.',
+ wr:{'0':'NEVER insert anything in the mouth during a seizure. Classic NCLEX distractor. Breaks teeth and causes aspiration. The patient CANNOT swallow the tongue.','1':'NEVER restrain a seizing patient — causes fractures. Guide movement gently, do not forcefully restrain.','3':'Prone position is dangerous during seizure. The correct recovery position AFTER seizure is lateral (on side).'},
+ clue:'>5 minutes of continuous seizure = status epilepticus = IV lorazepam = medical emergency.',
+ think:'During seizure: TIME IT. Side. Protect. No restraint. Nothing in mouth. Status >5 min = lorazepam NOW.',
+ danger:'Status epilepticus >30 min → permanent neuronal injury and irreversible brain damage'},
+
+{id:'c11',num:11,sys:'renal',bg:'linear-gradient(135deg,#0f766e,#134e4a)',title:'The Falling Urine Output',
+ stem:'A post-op day 1 patient from major abdominal surgery: urine output 20, 18, then 14 mL/hr over the last 3 hours (received 2L IVF). VS: BP 96/62, HR 118. Creatinine: 1.0 → 2.4 mg/dL. K+: 6.0 mEq/L.',
+ vitals:[['Urine output','20→18→14 mL/hr'],['BP','96/62'],['HR','118'],['K+','6.0 mEq/L'],['Creatinine','1.0→2.4']],
+ q:'Which finding requires the MOST immediate nursing intervention?',
+ opts:['A. Urine output trending down to 14 mL/hr','B. Blood pressure of 96/62','C. Serum potassium of 6.0 mEq/L','D. Creatinine rise from 1.0 to 2.4 mg/dL'],
+ ans:2,
+ rationale:'C is correct. K+ 6.0 mEq/L is a cardiac emergency. Hyperkalemia at this level causes peaked T waves → widened QRS → ventricular fibrillation → cardiac arrest. The nurse must obtain an EKG immediately and notify the provider. While oliguria (A) confirms AKI, hypotension (B) is concerning, and rising creatinine (D) confirms progression — hyperkalemia is the acute lethal threat that can kill fastest.',
+ wr:{'0':'Oliguria confirms AKI and needs attention, but hyperkalemia is the immediate life-threatening cardiac emergency.','1':'Hypotension is concerning but K+ 6.0 causing cardiac arrhythmia is more immediately lethal.','3':'Rising creatinine confirms AKI progression but hyperkalemia is the acute cardiac threat.'},
+ clue:'AKI + K+ 6.0 = cardiac emergency → EKG for peaked T waves immediately.',
+ think:'AKI management priority order: K+ (arrhythmia) → fluid status → creatinine trend.',
+ danger:'K+ >6.0 with EKG changes (peaked T waves) → ventricular fibrillation → cardiac arrest'},
+
+{id:'c12',num:12,sys:'resp',bg:'linear-gradient(135deg,#c2410c,#9a3412)',title:'The COPD O₂ Order',
+ stem:'A 70-year-old with COPD exacerbation has SpO₂ 83% on room air. The physician orders: "Apply oxygen via nasal cannula — titrate to SpO₂ of 99%." The patient is alert and cooperative.',
+ vitals:[['SpO₂','83% on room air'],['Mental status','Alert and cooperative'],['Diagnosis','COPD exacerbation'],['Order','Target SpO₂ 99%']],
+ q:'Which nursing action is MOST appropriate?',
+ opts:['A. Apply O₂ at 6 L/min nasal cannula to achieve SpO₂ 99% as ordered','B. Apply O₂ at 1–2 L/min targeting SpO₂ 88–92% and clarify the order with the physician','C. Withhold all oxygen until ABG results return','D. Apply a 100% non-rebreather mask immediately'],
+ ans:1,
+ rationale:'B is correct. COPD patients (many are chronic CO₂ retainers) depend on their HYPOXIC DRIVE to breathe. Targeting SpO₂ 99% with high-flow O₂ removes this hypoxic drive → respiratory depression → CO₂ narcosis → apnea. The correct O₂ target in COPD is 88–92%. The nurse must apply appropriate O₂ (SpO₂ 83% absolutely needs treatment) AND question this unsafe order by clarifying with the physician.',
+ wr:{'0':'This order could cause respiratory depression in a COPD patient. It must be clarified before full implementation.','2':'SpO₂ 83% is dangerous — withholding O₂ entirely is wrong. The issue is the target, not the O₂ itself.','3':'100% NRB mask would drastically overcorrect, completely removing hypoxic drive.'},
+ clue:'COPD + O₂ target of 99% = unsafe order requiring nurse to question and clarify.',
+ think:'COPD O₂ target = 88–92%. Nurse duty: implement safe orders, question potentially harmful ones.',
+ danger:'High-flow O₂ removes hypoxic drive in COPD → CO₂ narcosis → apnea → respiratory arrest'},
+
+{id:'c13',num:13,sys:'psych',bg:'linear-gradient(135deg,#7c3aed,#6d28d9)',title:'The Manic Patient',
+ stem:'A psychiatric patient: awake for 4 days, spending excessively, believes she will win the Nobel Prize. She stopped lithium 3 weeks ago. Lithium level: 0.1 mEq/L (therapeutic 0.6–1.2). Speech is very rapid and she jumps between topics.',
+ vitals:[['Lithium level','0.1 mEq/L (subtherapeutic)'],['Sleep','None × 4 days'],['Behavior','Grandiose, pressured speech, flight of ideas']],
+ q:'Which nursing intervention has the HIGHEST immediate priority?',
+ opts:['A. Provide a structured, low-stimulation environment','B. Administer lithium as ordered and educate about compliance','C. Ensure adequate nutritional intake and hydration','D. Engage the patient in a calm discussion about the dangers of her behavior'],
+ ans:0,
+ rationale:'A is correct. During acute mania, providing a SAFE, STRUCTURED, LOW-STIMULATION environment is the immediate nursing priority to prevent harm. Extreme sleep deprivation combined with psychomotor agitation creates serious physical and psychological risk. Lithium (B) takes 5–7 days to reach therapeutic level — environmental safety addresses the immediate risk. Nutrition (C) is important but secondary. NEVER confront or discuss the dangers of manic beliefs (D) — this escalates agitation and can precipitate violence.',
+ wr:{'1':'Lithium is important, but it takes 5–7 days to work. Environmental safety addresses the immediate risk.','2':'Nutrition and hydration are important but secondary to immediate safety in acute mania.','3':'NEVER confront or argue with grandiose manic beliefs — this escalates agitation and can trigger violent behavior.'},
+ clue:'Acute mania + extreme sleep deprivation + grandiosity = safety and environment first.',
+ think:'Mania priority order: safe environment → medication → nutrition → education.',
+ danger:'Prolonged mania without treatment → physical exhaustion, dangerous impulsive decisions, self-harm'},
+
+{id:'c14',num:14,sys:'endo',bg:'linear-gradient(135deg,#15803d,#166534)',title:'The SIADH Order',
+ stem:'A patient on cyclophosphamide chemotherapy: serum Na+ 118 mEq/L. Urine specific gravity 1.025 (concentrated). No peripheral edema. The patient is confused and states "the room keeps spinning."',
+ vitals:[['Serum Na+','118 mEq/L (CRITICALLY LOW)'],['Urine SG','1.025 (concentrated)'],['Edema','Absent'],['Mental status','Confused']],
+ q:'Which treatment order would the nurse QUESTION for this patient?',
+ opts:['A. Fluid restriction to 1,000 mL/day','B. Normal saline 0.9% IV at 125 mL/hr','C. Implement seizure precautions','D. Monitor serum sodium every 4–6 hours'],
+ ans:1,
+ rationale:'B is correct (this is the order to question). In SIADH, isotonic normal saline is INEFFECTIVE and can WORSEN hyponatremia. The kidneys are already excreting dilute urine and retaining sodium — the NS sodium is excreted as dilute urine while the water is retained, worsening the dilutional hyponatremia. Treatment is FLUID RESTRICTION (A — correct). Hypertonic saline (3%) is only for severe symptomatic cases. Seizure precautions (C) and Na+ monitoring (D) are both appropriate.',
+ wr:{'0':'Fluid restriction IS the correct primary treatment for SIADH — do not question this order.','2':'Seizure precautions are appropriate for Na+ 118 with neurological symptoms.','3':'Frequent sodium monitoring is essential to track safe correction rate.'},
+ clue:'SIADH: fluid restriction treats it. Normal saline worsens it. Know the difference.',
+ think:'SIADH treatment: fluid restrict first → hypertonic saline only if severe/symptomatic. NS = WRONG.',
+ danger:'Na+ correction >8 mEq/L per 24 hours → central pontine myelinolysis → permanent paralysis'},
+
+{id:'c15',num:15,sys:'resp',bg:'linear-gradient(135deg,#0f172a,#1e293b)',title:'The ARDS Ventilator',
+ stem:'A septic patient develops worsening hypoxia (SpO₂ 81% on 100% non-rebreather mask). CXR shows bilateral ground-glass opacities. BNP is 120 pg/mL (normal). The patient is intubated and placed on mechanical ventilation.',
+ vitals:[['SpO₂','81% on 100% NRB'],['BNP','120 pg/mL (normal)'],['CXR','Bilateral ground-glass opacities'],['Precipitant','Sepsis']],
+ q:'Which ventilator setting is MOST important for this ARDS patient?',
+ opts:['A. High tidal volumes (10–12 mL/kg) to maximize oxygenation','B. Low tidal volumes (6 mL/kg IBW) to prevent volutrauma','C. FiO₂ at 100% until SpO₂ reaches 99%','D. Minimal PEEP settings to prevent barotrauma'],
+ ans:1,
+ rationale:'B is correct. Lung-protective ventilation in ARDS uses LOW tidal volumes of 6 mL/kg IBW — this is the evidence-based standard that reduces mortality. High tidal volumes (A) cause volutrauma (overdistension of damaged alveoli) and worsen ARDS. PEEP should be OPTIMIZED (higher settings to recruit alveoli) — not minimized (D is wrong). FiO₂ should be titrated to the lowest level achieving adequate SpO₂, not targeting 99% which causes O₂ toxicity (C is wrong).',
+ wr:{'0':'High tidal volumes in ARDS cause volutrauma — overdistension of already-damaged alveoli — and worsen outcomes.','2':'FiO₂ should be titrated to the lowest effective level. Targeting 99% causes oxygen toxicity.','3':'PEEP should be optimized (set higher) to recruit collapsed alveoli in ARDS — minimal PEEP worsens atelectasis.'},
+ clue:'ARDS: refractory hypoxia + bilateral infiltrates + normal BNP + sepsis precipitant.',
+ think:'ARDS ventilation: Low Vt (6 mL/kg) + adequate PEEP + prone positioning 12–16h/day for severe.',
+ danger:'High tidal volumes in ARDS → volutrauma → worsened lung injury → increased mortality'},
+
+{id:'c16',num:16,sys:'heme',bg:'linear-gradient(135deg,#dc2626,#b91c1c)',title:'The Allergic Reaction',
+ stem:'A patient receives IV penicillin. Within 3 minutes: diffuse urticaria develops, wheezing begins, stridor is audible, and the patient states "my throat is closing." VS: BP 78/42, HR 128, SpO₂ 92%.',
+ vitals:[['BP','78/42'],['HR','128'],['SpO₂','92%'],['Onset','3 min post-penicillin'],['Airway','Stridor — throat closing']],
+ q:'What is the FIRST action the nurse should take?',
+ opts:['A. Stop the penicillin infusion','B. Administer diphenhydramine (Benadryl) 50 mg IV','C. Administer epinephrine 0.3 mg IM to the lateral thigh','D. Call the rapid response team'],
+ ans:2,
+ rationale:'C is correct. Epinephrine IM is the FIRST and ONLY life-saving treatment for anaphylaxis. It must be given IMMEDIATELY — it reverses vasodilation, bronchospasm, and laryngeal edema. Stopping the infusion (A) is correct but secondary to epinephrine. Diphenhydramine (B) CANNOT reverse anaphylaxis or laryngeal edema — giving Benadryl instead of or before epinephrine can result in death. Calling rapid response (D) is important but is secondary to the immediate epinephrine injection.',
+ wr:{'0':'Stopping the infusion is correct but secondary — epinephrine must be given first as the life-saving intervention.','1':'Diphenhydramine is SECONDARY treatment. It cannot reverse anaphylaxis or laryngeal edema. Benadryl before epinephrine = potentially fatal delay.','3':'Calling rapid response is important but epinephrine must be injected NOW before any call.'},
+ clue:'Throat closing + urticaria + hypotension + wheezing after allergen = anaphylaxis.',
+ think:'Anaphylaxis: Epinephrine FIRST. Always. Nothing before epinephrine. Then airway, O₂, fluids, Benadryl.',
+ danger:'Delayed epinephrine with laryngeal edema → complete airway obstruction → death'},
+
+{id:'c17',num:17,sys:'gi',bg:'linear-gradient(135deg,#c2410c,#9a3412)',title:'The Confused Cirrhotic',
+ stem:'A patient with cirrhosis is increasingly confused over 2 hours. Arms extended, he has a coarse flapping tremor. Ammonia level: 108 µmol/L (elevated). Last bowel movement was 3 days ago.',
+ vitals:[['Ammonia','108 µmol/L (HIGH)'],['Asterixis','Positive (flapping tremor)'],['Last BM','3 days ago'],['Trend','Worsening confusion']],
+ q:'Which nursing intervention addresses the PRIMARY cause of this patient\'s confusion?',
+ opts:['A. Administer a benzodiazepine to calm the patient\'s agitation','B. Administer lactulose to promote bowel movements and reduce ammonia absorption','C. Restrict dietary protein to 20 g/day immediately','D. Increase IV fluid rate to improve cerebral perfusion'],
+ ans:1,
+ rationale:'B is correct. Confusion + asterixis + elevated ammonia + 3-day constipation = hepatic encephalopathy. Lactulose acidifies the colon → traps ammonia as ammonium (NH4+) which cannot be reabsorbed → excreted in stool. Goal: 2–3 soft stools/day. Constipation is the precipitating factor here. Benzodiazepines (A) are CONTRAINDICATED — they worsen CNS depression in hepatic encephalopathy. Severe protein restriction (C) is outdated. IV fluids (D) do not reduce ammonia.',
+ wr:{'0':'Benzodiazepines are CONTRAINDICATED in hepatic encephalopathy — they dramatically worsen CNS depression.','2':'Severe protein restriction (20g/day) is outdated and harmful. Moderate protein is maintained for healing.','3':'IV fluids do not address ammonia production or absorption.'},
+ clue:'Ammonia + confusion + asterixis + constipation = hepatic encephalopathy → lactulose.',
+ think:'Hepatic encephalopathy: find precipitant (constipation, GI bleed, infection) → lactulose is treatment.',
+ danger:'Progressive hepatic encephalopathy can advance to coma and brain herniation'},
+
+{id:'c18',num:18,sys:'endo',bg:'linear-gradient(135deg,#b45309,#92400e)',title:'The Bronze Patient',
+ stem:'A 35-year-old woman: 6 months of fatigue, 15 lb weight loss, postural dizziness, craving for salty foods, and "tanning" that her family says is odd since she hasn\'t been in the sun. Na+ 128, K+ 5.9, glucose 62. BP sitting 102/64; standing 84/50.',
+ vitals:[['Na+','128 mEq/L (low)'],['K+','5.9 mEq/L (high)'],['Glucose','62 mg/dL (low)'],['Orthostatic BP','102/64 → 84/50']],
+ q:'Which medication is MOST critical to administer?',
+ opts:['A. Levothyroxine (thyroid hormone)','B. Hydrocortisone (cortisol replacement)','C. Fludrocortisone (aldosterone replacement)','D. Metformin (for glucose management)'],
+ ans:1,
+ rationale:'B is correct. This is classic Addison\'s disease (primary adrenal insufficiency): hyperpigmentation without sun exposure + hyponatremia + hyperkalemia + hypoglycemia + orthostatic hypotension + fatigue + weight loss + salt craving. Hydrocortisone (cortisol replacement) is the most critically urgent medication — without cortisol, the patient cannot maintain hemodynamic stability, respond to stress, or maintain glucose. Fludrocortisone (C) is also needed but cortisol is more immediately urgent. Levothyroxine (A) treats hypothyroidism — wrong diagnosis.',
+ wr:{'0':'Levothyroxine is for hypothyroidism. The hyperpigmentation + electrolyte pattern clearly indicates Addison\'s.','2':'Fludrocortisone is also needed for Addison\'s (aldosterone), but hydrocortisone (cortisol) is the more immediately critical medication.','3':'Metformin is for T2DM. The hypoglycemia here is from cortisol deficiency — metformin would worsen it.'},
+ clue:'Hyperpigmentation + LOW Na + HIGH K + hypoglycemia + orthostatic hypotension = Addison\'s disease.',
+ think:'Addison\'s: need to ADD cortisol (hydrocortisone) AND aldosterone (fludrocortisone) back.',
+ danger:'Untreated Addison\'s with any physiological stress → adrenal crisis → circulatory shock → death'},
+
+{id:'c19',num:19,sys:'heme',bg:'linear-gradient(135deg,#7c3aed,#6d28d9)',title:'The Bleeding Patient',
+ stem:'A septic patient from a bowel perforation is bleeding from all IV sites, has petechiae across her abdomen and chest, and has blood in her urine. Lab results: PT 32 sec (HIGH), PTT 78 sec (HIGH), platelets 28,000, fibrinogen 60 mg/dL (LOW).',
+ vitals:[['PT','32 sec (HIGH)'],['PTT','78 sec (HIGH)'],['Platelets','28,000'],['Fibrinogen','60 mg/dL (LOW)'],['Bleeding','All IV sites + petechiae']],
+ q:'What is the FIRST priority in managing this patient?',
+ opts:['A. Administer FFP to replace clotting factors','B. Transfuse platelets to achieve a count >50,000','C. Treat the underlying cause — sepsis from the bowel perforation','D. Administer heparin to prevent further thrombosis'],
+ ans:2,
+ rationale:'C is correct. DIC is ALWAYS driven by the underlying cause. Without treating the sepsis, all replacement therapy (FFP, cryoprecipitate, platelets) will continue to be consumed as fast as it is given. Treating the CAUSE is the first and most critical priority. FFP (A) and platelets (B) are important supportive measures but are futile without cause treatment. Heparin (D) in active hemorrhagic DIC can worsen bleeding.',
+ wr:{'0':'FFP is supportive care but will be consumed without treating the sepsis driving the DIC.','1':'Platelet transfusion is supportive but insufficient — continuing sepsis will consume them immediately.','3':'Heparin in acute hemorrhagic DIC is controversial and rarely correct — it can worsen bleeding.'},
+ clue:'Bleeding from multiple sites + prolonged PT/PTT + low platelets + low fibrinogen + sepsis = DIC.',
+ think:'DIC: TREAT THE CAUSE first, then replace consumed factors with FFP → cryoprecipitate → platelets.',
+ danger:'DIC is consumptive — replacing factors without treating the underlying cause is futile and will fail'},
+
+{id:'c20',num:20,sys:'neuro',bg:'linear-gradient(135deg,#0f172a,#1e293b)',title:'The Head Injury Patient',
+ stem:'A patient admitted for head trauma (GCS 14 on arrival) now has: HR 48, BP 218/110, Cheyne-Stokes respirations, and is increasingly difficult to arouse. GCS is declining.',
+ vitals:[['HR','48 bpm'],['BP','218/110'],['Respirations','Cheyne-Stokes (irregular)'],['GCS','Declining from baseline']],
+ q:'Which nursing intervention is CONTRAINDICATED for this patient?',
+ opts:['A. Elevate the head of the bed to 30°','B. Administer mannitol as ordered','C. Place the patient in Trendelenburg (head-down) position','D. Maintain a quiet, low-stimulation environment'],
+ ans:2,
+ rationale:'C is correct (this is CONTRAINDICATED). Trendelenburg position (head DOWN) dramatically increases cerebral blood flow and intracranial pressure, accelerating herniation. This is the OPPOSITE of what is needed. Cushing\'s triad (hypertension + bradycardia + irregular respirations) is present = impending brain herniation = maximum emergency. HOB 30° (A) promotes venous drainage = CORRECT. Mannitol (B) reduces cerebral edema = CORRECT. Quiet environment (D) reduces stimulation-induced ICP spikes = CORRECT.',
+ wr:{'0':'HOB 30° is the CORRECT intervention for increased ICP — promotes cerebral venous drainage.','1':'Mannitol is an osmotic diuretic appropriately used to reduce cerebral edema and ICP.','3':'A quiet, low-stimulation environment correctly reduces stimulation-induced ICP spikes.'},
+ clue:'Cushing\'s triad = impending herniation. Trendelenburg raises ICP → accelerates herniation.',
+ think:'↑ICP: HOB 30° + Quiet + Mannitol. NEVER Trendelenburg. NEVER Valsalva.',
+ danger:'Cushing\'s triad = brain is herniating NOW = maximum urgency life-threatening emergency'},
+
+{id:'c21',num:21,sys:'psych',bg:'linear-gradient(135deg,#be185d,#9d174d)',title:'The Bulimia Finding',
+ stem:'A college student in the campus health center has K+ 2.8 mEq/L. The nurse notices calluses on the knuckles of her right hand. Her dental chart shows unusual enamel erosion. She denies any health problems.',
+ vitals:[['K+','2.8 mEq/L (CRITICALLY LOW)'],['Knuckle calluses','Present (Russell\'s sign)'],['Enamel erosion','Noted by dentist']],
+ q:'Which nursing action should be performed FIRST?',
+ opts:['A. Inform the patient that her purging behaviors are dangerous','B. Obtain an EKG and initiate cardiac monitoring','C. Ask the student directly about self-induced vomiting','D. Contact the physician to report the potassium level'],
+ ans:1,
+ rationale:'B is correct. K+ 2.8 mEq/L is critically low and places the patient at immediate risk for ventricular arrhythmia and cardiac arrest. The FIRST action is to obtain an EKG and initiate cardiac monitoring to assess for dangerous changes (prolonged QT, peaked T waves, U waves). This is the immediate SAFETY priority. Physician notification (D) is also critical, but the nurse should obtain the EKG first to provide complete information. Therapeutic communication (A, C) is important but is secondary to the cardiac emergency.',
+ wr:{'0':'Informing about dangers is important but secondary to the immediate cardiac risk from K+ 2.8.','2':'Therapeutic communication about purging is important but secondary to the cardiac emergency from critical hypokalemia.','3':'Calling the physician is important but the nurse should obtain the EKG first to have complete data.'},
+ clue:'K+ 2.8 + Russell\'s sign (knuckle calluses) + enamel erosion = bulimia with critical hypokalemia.',
+ think:'Bulimia: recognize physical signs → critically low K+ → EKG immediately → cardiac monitoring.',
+ danger:'K+ <2.8 with prolonged QT → ventricular arrhythmia → cardiac arrest'},
+
+{id:'c22',num:22,sys:'gi',bg:'linear-gradient(135deg,#c2410c,#9a3412)',title:'The IBD Distinction',
+ stem:'Two patients: Patient 1 has RLQ pain, non-bloody diarrhea, oral ulcers, 15 lb weight loss, and skip lesions on colonoscopy. Patient 2 has 10 bloody stools/day, urgency, tenesmus, and continuous colonic inflammation starting at the rectum.',
+ vitals:[['Patient 1','RLQ + non-bloody + skip lesions = Crohn\'s disease'],['Patient 2','Bloody + rectal + continuous = Ulcerative colitis']],
+ q:'Which statement about treatment for these two patients is MOST accurate?',
+ opts:['A. Surgical colectomy is curative for both patients','B. Both patients should receive identical medication regimens','C. Surgical colectomy is curative for ulcerative colitis but NOT for Crohn\'s disease','D. Crohn\'s disease has a higher colorectal cancer risk than ulcerative colitis'],
+ ans:2,
+ rationale:'C is correct. Colectomy (surgical removal of the colon) is CURATIVE for ulcerative colitis because UC is confined exclusively to the colon. In Crohn\'s disease, surgery is NOT curative — Crohn\'s can affect any part of the GI tract from mouth to anus, and disease recurs at anastomosis sites or in other segments after surgery. This is a key NCLEX distinguishing fact. A is wrong (colectomy doesn\'t cure Crohn\'s). D is wrong — UC has HIGHER colorectal cancer risk.',
+ wr:{'0':'Colectomy cures UC (confined to colon) but does NOT cure Crohn\'s — disease recurs in any GI segment after surgery.','1':'While medications overlap (mesalamine, biologics), the treatment goals and specific approaches differ significantly.','3':'Ulcerative colitis has HIGHER colorectal cancer risk, especially with extensive disease lasting >8–10 years.'},
+ clue:'UC = colon only + continuous + rectum always = colectomy = CURE. Crohn\'s = any GI = no surgical cure.',
+ think:'Key NCLEX: colectomy cures UC. Crohn\'s surgery = complication management only, not curative.',
+ danger:'Toxic megacolon in UC = massive colon dilation → perforation risk → emergency colectomy'},
+
+{id:'c23',num:23,sys:'resp',bg:'linear-gradient(135deg,#7c3aed,#6d28d9)',title:'The TB Isolation',
+ stem:'A patient from a high-prevalence country: 6-week productive cough, hemoptysis, night sweats, 12 lb weight loss. Sputum AFB smear is POSITIVE for acid-fast bacilli. The patient is placed in a private room.',
+ vitals:[['AFB smear','POSITIVE'],['Cough','6 weeks, productive with hemoptysis'],['Night sweats','Present'],['Weight loss','12 lbs']],
+ q:'Which type of isolation and protective equipment is required for ALL staff entering this room?',
+ opts:['A. Contact precautions: gloves and gown only','B. Droplet precautions: surgical mask','C. Airborne precautions: negative pressure room + N95 respirator for all staff','D. Standard precautions only'],
+ ans:2,
+ rationale:'C is correct. Active pulmonary TB requires AIRBORNE PRECAUTIONS. TB is transmitted via microscopic airborne droplet nuclei that remain suspended in air for hours and travel on air currents. Requirements: (1) Negative pressure room — air flows INTO the room, preventing TB particles from escaping into hallways; (2) N95 respirator for ALL healthcare workers entering — NOT a surgical mask, which does not filter small particles; (3) The patient wears a surgical mask when leaving the room.',
+ wr:{'0':'Contact precautions are for pathogens spread by direct touch (MRSA, C. diff). TB is airborne.','1':'Droplet precautions use surgical masks for large respiratory droplets. TB requires N95 for small airborne particles that stay suspended.','3':'Standard precautions are completely insufficient for active TB.'},
+ clue:'TB = AIRBORNE. Small droplet nuclei stay suspended in air for hours. N95 + negative pressure room.',
+ think:'Airborne (TB, measles, varicella): N95 + negative pressure. Droplet (influenza, RSV): surgical mask.',
+ danger:'AFB positive = actively infectious. All close contacts need exposure assessment and prophylaxis'},
+
+{id:'c24',num:24,sys:'cardio',bg:'linear-gradient(135deg,#0f766e,#134e4a)',title:'The DVT Patient',
+ stem:'A patient 2 days post-total knee replacement: right calf pain and swelling. Right calf circumference is 3 cm larger than the left. D-dimer is elevated. Duplex ultrasound confirms DVT in the right popliteal vein.',
+ vitals:[['Calf difference','Right > Left by 3 cm'],['D-dimer','Elevated'],['Duplex US','DVT confirmed — right popliteal vein']],
+ q:'Which patient instruction is MOST appropriate?',
+ opts:['A. "Massage your calf to help disperse the clot and improve circulation"','B. "Apply a heating pad to reduce the pain and inflammation"','C. "Keep your knee completely straight at all times to reduce clot movement"','D. "Do not massage your leg — I will elevate it and start anticoagulant therapy"'],
+ ans:3,
+ rationale:'D is correct. With confirmed DVT: DO NOT massage the limb (risk of dislodging clot → pulmonary embolism), elevate the extremity (reduces edema), and initiate anticoagulation. Calf massage (A) can dislodge the thrombus → fatal PE. Heat application (B) can also dislodge the clot and is contraindicated over a known DVT. Keeping the knee completely straight (C) is not evidence-based standard of care.',
+ wr:{'0':'Massaging the calf can dislodge the thrombus → pulmonary embolism → potentially fatal. NEVER massage a DVT.','1':'Heat application over a known DVT can dislodge the clot → PE. Contraindicated.','2':'Maintaining complete knee extension is not the standard of care and adds unnecessary discomfort.'},
+ clue:'DVT: NEVER massage. Elevate. Anticoagulate. Monitor for PE (sudden dyspnea = emergency).',
+ think:'DVT priorities: no massage, elevation, anticoagulation, monitor for PE symptoms.',
+ danger:'Massaging a DVT can dislodge the thrombus → pulmonary embolism → death'},
+
+{id:'c25',num:25,sys:'heme',bg:'linear-gradient(135deg,#b45309,#92400e)',title:'The Sickle Cell Crisis',
+ stem:'A 22-year-old with sickle cell disease is admitted for vaso-occlusive crisis with severe bilateral hip and back pain rated 9/10. VS: T 38.8°C, HR 112, SpO₂ 94%. Three hours into admission, he develops pleuritic chest pain. A new infiltrate appears on the chest x-ray.',
+ vitals:[['Pain','9/10 hip and back'],['Temp','38.8°C'],['SpO₂','94%'],['NEW finding','Pleuritic chest pain + CXR infiltrate at 3 hours']],
+ q:'Which nursing action is the HIGHEST priority?',
+ opts:['A. Increase the opioid analgesic dose for the worsening pain','B. Notify the physician immediately and prepare for possible exchange transfusion','C. Apply supplemental oxygen and recheck SpO₂ in 30 minutes','D. Obtain a sputum culture for antibiotic guidance'],
+ ans:1,
+ rationale:'B is correct. New CXR infiltrate + pleuritic chest pain + fever in a sickle cell patient = ACUTE CHEST SYNDROME (ACS) — the most common cause of death in sickle cell disease. This is a critical emergency. The physician must be notified IMMEDIATELY for management, which often requires exchange transfusion (replaces sickled cells with normal RBCs). While O₂ (C) should also be applied, physician notification and ACS recognition are the highest priorities. Analgesic adjustment (A) and sputum culture (D) are secondary.',
+ wr:{'0':'Increasing analgesics does not address acute chest syndrome — a life-threatening emergency requiring exchange transfusion.','2':'O₂ should be applied, but physician notification for emergency ACS management takes highest priority.','3':'Sputum culture may guide antibiotics later but is not the immediate priority in ACS.'},
+ clue:'Sickle cell + new CXR infiltrate + chest pain + fever = ACUTE CHEST SYNDROME = most deadly complication.',
+ think:'ACS: fever + chest pain + new infiltrate in sickle cell = notify physician + prepare for exchange transfusion.',
+ danger:'Acute chest syndrome is the #1 cause of death in sickle cell disease — delay in recognition is fatal'}
+];
+
+// ══════════════════════════════════════════
+// CONCEPT CHECKS DATA (30 questions)
+// ══════════════════════════════════════════
+const CC_DATA=[
+{sec:'🌿 Endocrine & Metabolic',qs:[
+ {q:'A patient has TSH 0.08 mIU/L and Free T4 2.8 ng/dL. Which condition is indicated?',opts:['Hypothyroidism','Hyperthyroidism','SIADH','Diabetes insipidus'],ans:1,exp:'Low TSH + high Free T4 = hyperthyroidism. TSH is INVERSELY related to T4 levels. High TSH = hypothyroid (pituitary trying harder). Low TSH = hyperthyroid (pituitary suppressed by excess hormone).'},
+ {q:'Before giving IV dextrose to a chronic alcoholic patient, the nurse should FIRST administer:',opts:['Folic acid','Vitamin B12','Thiamine (vitamin B1)','Pyridoxine (B6)'],ans:2,exp:'Thiamine (B1) MUST be given BEFORE glucose in alcoholics. Glucose without thiamine → Wernicke\'s encephalopathy (irreversible brain damage from thiamine depletion during glucose metabolism). This is a classic NCLEX safety priority.'},
+ {q:'Which lab pattern is MOST consistent with SIADH?',opts:['Low Na+, dilute urine, peripheral edema','High Na+, dilute urine, dehydration signs','Low Na+, concentrated urine, NO edema','High Na+, concentrated urine, peripheral edema'],ans:2,exp:'SIADH: low Na+ (dilutional hyponatremia) + concentrated urine (excess ADH makes kidneys retain water) + NO edema (fluid is intracellular, not interstitial). Key: no edema differentiates from heart failure or cirrhosis.'},
+ {q:'In a patient with DKA, serum K+ is 3.2 mEq/L. The nurse should:',opts:['Start the insulin infusion immediately','Hold insulin and replace potassium first','Give sodium bicarbonate for the acidosis','Increase IV fluid rate to 500 mL/hr'],ans:1,exp:'K+ <3.5 in DKA = HOLD insulin and replace K+ first. Insulin drives K+ into cells → hypokalemia → fatal arrhythmia. This is the most critical DKA safety check — always verify K+ before starting insulin.'},
+ {q:'A patient post-thyroidectomy develops perioral tingling and a positive Chvostek\'s sign. Which finding would be MOST dangerous if it develops?',opts:['Muscle cramps in the hands','Prolonged QT on EKG','Mild perioral tingling','Slightly elevated heart rate'],ans:1,exp:'Prolonged QT from hypocalcemia can lead to ventricular arrhythmia and cardiac arrest. Additionally, laryngospasm (airway obstruction) is the most immediately dangerous complication of hypocalcemia. IV calcium gluconate must be at the bedside.'},
+]},
+{sec:'❤️ Cardiovascular Safety',qs:[
+ {q:'A patient with cardiac tamponade is hypotensive. Which medication should NEVER be administered?',opts:['IV normal saline bolus','Epinephrine (cardiac arrest only)','Furosemide (Lasix) IV','High-flow oxygen via mask'],ans:2,exp:'Furosemide is CONTRAINDICATED in cardiac tamponade. Diuretics reduce preload → further decreases already-impaired ventricular filling → cardiac arrest. The ONLY treatment for tamponade is pericardiocentesis. IV fluids are used as a temporary bridge.'},
+ {q:'Which finding in a post-MI patient MOST suggests cardiogenic shock?',opts:['BP 100/70, warm flushed skin, low-grade fever','BP 78/50, cool clammy skin, urine output 12 mL/hr','BP 160/90, bounding pulses, diaphoresis','BP 90/60, increased urine output, mild confusion'],ans:1,exp:'Cardiogenic shock: BP <90 systolic + cool clammy skin (vasoconstriction compensating) + oliguria (organ hypoperfusion) after MI. Cool clammy skin differentiates from septic/distributive shock, which presents with warm flushed skin.'},
+ {q:'A patient on warfarin has an INR of 5.8. Which reversal agent is MOST appropriate for non-urgent reversal?',opts:['Protamine sulfate','Vitamin K (phytonadione)','Aminocaproic acid','Cryoprecipitate'],ans:1,exp:'Warfarin reversal: Vitamin K (phytonadione) for non-urgent reversal over several hours. For emergent reversal: 4-factor prothrombin complex concentrate (PCC) or FFP. Protamine sulfate reverses HEPARIN — not warfarin.'},
+ {q:'A patient with a confirmed DVT reports sudden onset dyspnea, pleuritic chest pain, and HR of 122. Which is the PRIORITY action?',opts:['Apply oxygen and call the physician immediately','Massage the affected leg to reduce swelling','Ambulate the patient to improve circulation','Obtain a venous duplex ultrasound'],ans:0,exp:'Sudden dyspnea + pleuritic chest pain + tachycardia in a DVT patient = pulmonary embolism until proven otherwise. PRIORITY: oxygen immediately + call physician + prepare for CT pulmonary angiography + IV heparin. NEVER massage the leg (can dislodge more clot).'},
+]},
+{sec:'💨 Respiratory Priorities',qs:[
+ {q:'Which asthma finding indicates the MOST severe and immediately life-threatening obstruction?',opts:['Audible expiratory wheezing','SpO₂ of 92%','Silent chest with severe respiratory distress','Accessory muscle use with tachypnea'],ans:2,exp:'Silent chest (no wheeze despite severe distress) = no air movement = complete obstruction = pre-respiratory arrest. MORE dangerous than audible wheezing. Any wheeze, even loud wheezing, means some air is moving. No wheeze = nothing moving.'},
+ {q:'For a hemodynamically STABLE pulmonary embolism, which is the MOST important initial action?',opts:['Administer tPA (alteplase) immediately','Apply oxygen and obtain CT pulmonary angiography','Observe the patient and begin therapeutic anticoagulation only','Prepare for emergent surgical embolectomy'],ans:1,exp:'Stable PE: O₂ → CT pulmonary angiography (gold standard — confirms PE) → anticoagulation (heparin). tPA is ONLY for MASSIVE PE with hemodynamic instability. Surgery is rarely indicated.'},
+ {q:'A COPD patient\'s ABG shows pH 7.28 and PaCO₂ 68 (respiratory acidosis). What does this MOST likely indicate?',opts:['Effective treatment and improved breathing','CO₂ narcosis from excessive oxygen administration','Normal compensated finding expected in COPD','Patient is hyperventilating due to anxiety'],ans:1,exp:'Rising CO₂ + worsening acidosis in a COPD patient on supplemental O₂ suggests CO₂ narcosis — the hypoxic drive has been removed by excessive O₂ → respiratory depression → CO₂ retention. Target SpO₂ 88–92% in COPD, NOT higher.'},
+]},
+{sec:'🔮 Neurological Safety',qs:[
+ {q:'Which action is CONTRAINDICATED during an active tonic-clonic seizure?',opts:['Turning the patient to their side','Timing the seizure duration','Inserting a padded tongue blade between the teeth','Having oxygen available at the bedside'],ans:2,exp:'NEVER insert tongue blades, fingers, or any object in the mouth during a seizure. Classic NCLEX distractor. It breaks teeth, causes lacerations, causes aspiration, and injures the nurse. The patient CANNOT swallow the tongue — this is a myth.'},
+ {q:'A head trauma patient develops HR 46, BP 220/108, and Cheyne-Stokes breathing. What is the PRIORITY action?',opts:['Elevate HOB to 30° and notify neurosurgery STAT','Place patient in Trendelenburg to increase cerebral blood flow','Administer metoprolol IV for the bradycardia','Increase IV fluid rate to improve cardiac output'],ans:0,exp:'Cushing\'s triad = impending brain herniation = maximum emergency. HOB 30° promotes venous drainage and reduces ICP. NEVER Trendelenburg (drastically raises ICP). NEVER give beta-blockers for compensatory bradycardia of ↑ICP (bradycardia is protective here).'},
+ {q:'Before treating a new ischemic stroke, which action is MOST important?',opts:['Administer aspirin 325 mg immediately','Aggressively lower BP to <140/90 with IV medication','Obtain CT head WITHOUT contrast to rule out hemorrhage','Insert NG tube for medication administration'],ans:2,exp:'CT head without contrast MUST be done before ANY treatment. Giving aspirin or tPA to a hemorrhagic stroke patient = fatal (worsens the bleed). CT takes only minutes and is absolutely mandatory before treatment. Never skip this step.'},
+]},
+{sec:'🧠 Psych & Eating Disorders',qs:[
+ {q:'A patient with bulimia nervosa needs an antidepressant. Which medication should the nurse QUESTION?',opts:['Sertraline (Zoloft)','Fluoxetine (Prozac)','Bupropion (Wellbutrin)','Escitalopram (Lexapro)'],ans:2,exp:'Bupropion is CONTRAINDICATED in bulimia nervosa — it lowers the seizure threshold, and electrolyte imbalances common in bulimia (hypokalemia) further increase seizure risk. Fluoxetine (Prozac) is the only FDA-approved antidepressant for bulimia nervosa.'},
+ {q:'An anorexia nervosa patient is starting nutritional rehabilitation. The nurse is MOST concerned about:',opts:['Hyperglycemia from carbohydrate loading','Refeeding syndrome causing hypophosphatemia','Aspiration pneumonia from NG tube feeding','Constipation from increased fiber intake'],ans:1,exp:'Refeeding syndrome: starting nutrition in a severely malnourished patient → rapid shift of phosphate, potassium, and magnesium INTO cells → severe hypophosphatemia → cardiac failure, respiratory failure, seizures. Nutrition must be started SLOWLY with close electrolyte monitoring.'},
+ {q:'A bipolar patient on lithium: coarse hand tremor, vomiting, feels "wobbly." Lithium level is 1.8 mEq/L. What is MOST important?',opts:['Increase fluid intake to dilute the lithium level','Hold all lithium doses and notify physician immediately','Administer an antiemetic for the nausea','Reassure that tremor is a common expected side effect'],ans:1,exp:'Lithium 1.8 mEq/L = TOXIC (therapeutic range 0.6–1.2). Coarse tremor + vomiting + ataxia = lithium toxicity. Hold ALL lithium doses immediately. Notify physician. IV fluids may be needed to facilitate renal excretion. A FINE tremor is common; a COARSE tremor indicates toxicity.'},
+]},
+{sec:'💧 Renal & Fluid Balance',qs:[
+ {q:'Which statement about SIADH treatment is MOST accurate?',opts:['Administer 0.9% normal saline IV to correct the low sodium','Fluid restriction is the primary treatment','A loop diuretic alone will correct the hyponatremia','Hypertonic saline (3%) is always the first-line treatment'],ans:1,exp:'Fluid restriction (800–1200 mL/day) is the PRIMARY treatment for SIADH. Normal saline WORSENS hyponatremia in SIADH (the kidneys excrete water and retain sodium from NS, worsening dilution). Hypertonic saline is only for severe symptomatic cases (seizures, coma).'},
+ {q:'In AKI, which electrolyte abnormality is the MOST immediately life-threatening?',opts:['Hyponatremia (low Na+)','Hyperkalemia (high K+)','Hypocalcemia (low Ca²+)','Hypomagnesemia (low Mg²+)'],ans:1,exp:'Hyperkalemia is the most immediately life-threatening electrolyte abnormality in AKI. K+ >6.0 with peaked T waves → widened QRS → ventricular fibrillation → cardiac arrest. Always check K+ and EKG immediately in AKI.'},
+ {q:'A CKD patient is prescribed ibuprofen for joint pain. The nurse should:',opts:['Administer as ordered — ibuprofen is safe for pain management','Question the order — NSAIDs are harmful in CKD and must be avoided','Give a smaller dose since the patient has kidney disease','Substitute acetaminophen without notifying the physician'],ans:1,exp:'NSAIDs are CONTRAINDICATED in CKD. They inhibit renal prostaglandins → renal vasoconstriction → worsen kidney function → accelerate CKD progression. The nurse must question and clarify this unsafe order with the prescriber.'},
+]},
+{sec:'🌊 Fluid & Electrolyte Critical Thinking',qs:[
+ {q:'A patient has serum Na+ 124 mEq/L and is being treated with hypertonic saline (3% NaCl). Which finding would be MOST concerning?',opts:['Na+ rises from 124 to 128 mEq/L in 12 hours','Na+ rises from 124 to 140 mEq/L in 12 hours','The patient\'s urine output increases','The patient\'s confusion gradually improves'],ans:1,exp:'Na+ rising from 124 to 140 mEq/L in 12 hours = overcorrection (16 mEq/L rise in 12 hours). Maximum safe correction is 8 mEq/L per 24 hours. Rapid overcorrection → central pontine myelinolysis (osmotic demyelination syndrome) → permanent neurological damage including quadriplegia.'},
+ {q:'Which clinical presentation is MOST consistent with diabetes insipidus (DI)?',opts:['Low Na+, concentrated urine, weight gain, no edema','High Na+, dilute urine, extreme thirst, dehydration','Low Na+, dilute urine, orthostatic hypotension','High Na+, concentrated urine, peripheral edema'],ans:1,exp:'DI: high serum Na+ (hypernatremia) + dilute urine (very low SG <1.005) + extreme thirst (polydipsia) + dehydration signs. This is the OPPOSITE of SIADH. Central DI: no ADH from pituitary → kidneys cannot concentrate urine → massive dilute urine output.'},
+]}
+];
+
+// ══════════════════════════════════════════
+// RAPID REVIEW DATA (all 66 diseases)
+// ══════════════════════════════════════════
+const RR_ALL=[
+// PSYCH (10)
+{n:'ADHD',s:'psych',e:'🧠',h:'Inattention + hyperactivity + impulsivity across all settings',d:'Cardiovascular effects from stimulants; stimulant diversion risk',p:'Structured safe environment; stimulants in morning only',t:'Behavioral therapy <6yr; stimulants ≥6yr (methylphenidate)',m:'ADHD = Always Distractible Hyperactive Disorganized. Schedule II.'},
+{n:'Autism Spectrum',s:'psych',e:'🧩',h:'Social-communication deficits + repetitive behaviors from early childhood',d:'Elopement/wandering; self-injury; seizures (30% of ASD)',p:'Consistent routine; sensory-safe environment; no restraint',t:'ABA + speech therapy + OT; no medication for core symptoms',m:'SSR = Social + Sensory + Repetitive. Routine is therapeutic.'},
+{n:'Major Depression',s:'psych',e:'😔',h:'SIGECAPS × ≥2 weeks — anhedonia + depressed mood most days',d:'Suicide HIGHEST when energy returns but mood still low (early treatment)',p:'Assess suicidal ideation directly — always. Safety first.',t:'SSRIs first-line + CBT combination most effective',m:'SIGECAPS: Sleep Interest Guilt Energy Concentration Appetite Psychomotor Suicide'},
+{n:'Bipolar Disorder',s:'psych',e:'🔄',h:'Decreased sleep need + grandiosity + pressured speech + risky behavior',d:'Lithium toxicity (narrow window 0.6–1.2); suicide in mixed states',p:'Safe quiet environment; monitor lithium level; no confronting delusions',t:'Lithium or valproate; atypical antipsychotics for acute mania',m:'DIG FAST: Distractibility Impulsivity Grandiosity Flight Activity Sleep Talk'},
+{n:'Schizophrenia',s:'psych',e:'🌀',h:'Auditory hallucinations + delusions + flat affect + disorganized thought',d:'Command hallucinations; NMS; clozapine agranulocytosis',p:'Assess command hallucinations for safety; do not argue with delusions',t:'Atypical antipsychotics; clozapine for treatment-resistant only',m:'Positive sx = ↑dopamine mesolimbic. Negative sx = ↓prefrontal dopamine.'},
+{n:'GAD',s:'psych',e:'😰',h:'Pervasive uncontrollable worry ×6+ months + muscle tension + insomnia',d:'Benzodiazepine dependence risk',p:'Therapeutic communication; relaxation techniques; limit caffeine',t:'CBT first-line; SSRI/SNRI; buspirone (no dependence risk)',m:'GAD = 6 months × Multiple areas × Difficult to control = generalized'},
+{n:'Panic Disorder',s:'psych',e:'💥',h:'Discrete intense fear episode peaking in minutes — chest pain, tingling, dyspnea',d:'Must rule out MI, PE, thyroid disease, hypoglycemia first',p:'Calm presence; controlled breathing; do NOT use paper bag (hypoxia risk)',t:'SSRIs long-term + CBT with exposure therapy; benzos for acute only',m:'Panic: Rule out CARDIAC always. Peak in minutes. Resolve in 20–30 min.'},
+{n:'Anorexia Nervosa',s:'psych',e:'⚖️',h:'Lanugo + bradycardia + severely underweight + distorted body image',d:'Refeeding syndrome (hypophosphatemia → cardiac failure); suicide',p:'Cardiac monitoring; electrolytes; START NUTRITION VERY SLOWLY',t:'Weight restoration; CBT/family-based therapy; hospitalization if unstable',m:'Lanugo + Bradycardia + Amenorrhea = anorexia. Refeeding = start SLOW.'},
+{n:'Bulimia Nervosa',s:'psych',e:'🌊',h:'Normal weight + enamel erosion + Russell\'s sign (knuckle calluses) + low K+',d:'Hypokalemia → ventricular arrhythmia; esophageal tear (Mallory-Weiss)',p:'EKG if K+ <3.0; non-judgmental approach; cardiac monitoring',t:'CBT (most effective) + fluoxetine (FDA approved); AVOID bupropion',m:'Binge + Purge + Normal weight + Low K+ = CARDIAC DANGER. No bupropion.'},
+{n:'Substance Withdrawal',s:'psych',e:'🚫',h:'DTs at 48–72h: high fever + confusion + visual/tactile hallucinations',d:'DTs mortality 5–10%; Wernicke\'s encephalopathy if glucose given without thiamine',p:'Benzodiazepines per CIWA; THIAMINE BEFORE any glucose — always',t:'Lorazepam/diazepam CIWA-guided; thiamine; magnesium replacement',m:'Alcohol withdrawal: THIAMINE BEFORE GLUCOSE. DTs = 48–72h. Benzos = treatment.'},
+// ENDOCRINE (13)
+{n:'Hypothyroidism',s:'endo',e:'❄️',h:'Cold intolerance + weight gain + bradycardia + constipation + fatigue',d:'Myxedema coma: hypothermia + bradycardia + decreased LOC',p:'Levothyroxine; cardiac monitoring; watch for myxedema coma',t:'Levothyroxine on empty stomach daily; lifelong; separate from Ca/iron by 4h',m:'Hypo = SLOW: Cold Weight-gain Constipation Bradycardia Lethargy Dry-skin. TSH ↑'},
+{n:'Hyperthyroidism',s:'endo',e:'🔥',h:'Heat intolerance + tachycardia + weight loss + tremor + exophthalmos',d:'Thyroid storm: fever >104°F + extreme tachycardia + AMS = emergency',p:'Cardiac monitoring (A-fib); antithyroid meds; beta-blocker for tachycardia',t:'Methimazole (preferred); PTU (pregnancy 1st trimester); RAI definitive',m:'Hyper = FAST: Heat Anxiety Palpitations Weight-loss Exophthalmos. TSH ↓'},
+{n:'Thyroid Storm',s:'endo',e:'⚡',h:'Fever >104°F + extreme tachycardia >140 + AMS in hyperthyroid patient',d:'Cardiovascular collapse; death without treatment',p:'EMERGENCY: cool patient; PTU FIRST → iodine 1h later → steroid → propranolol',t:'PTU → Lugol\'s iodine → hydrocortisone → propranolol; ICU; NO aspirin',m:'Storm: PTU → iodine (1h later) → steroid → beta-blocker. Cool. NO aspirin.'},
+{n:'Myxedema Coma',s:'endo',e:'🧊',h:'Hypothermia + bradycardia + decreased LOC in elderly hypothyroid patient',d:'Respiratory failure; cardiovascular collapse; death',p:'AIRWAY first; IV levothyroxine; PASSIVE rewarming (NOT rapid)',t:'IV levothyroxine + IV hydrocortisone; ICU; mechanical ventilation if needed',m:'Myxedema: Hypothermia + Bradycardia + ↓LOC. Airway → IV T4 → Passive warm.'},
+{n:'Hypoparathyroidism',s:'endo',e:'🦴',h:'Perioral tingling + positive Chvostek\'s/Trousseau\'s signs post-neck surgery',d:'Laryngospasm → airway obstruction; QTc prolongation → arrhythmia',p:'IV calcium gluconate at bedside post-op; monitor airway; cardiac monitor',t:'IV calcium gluconate (acute); oral calcium + calcitriol (maintenance)',m:'Hypo-PTH = LOW Ca = Tetany + Chvostek\'s + Laryngospasm. Calcium bedside.'},
+{n:'Hyperparathyroidism',s:'endo',e:'🪨',h:'Stones + Bones + Groans + Moans (Psychic) = hypercalcemia symptoms',d:'Renal failure; cardiac arrhythmias (shortened QT); pancreatitis',p:'IV normal saline first (cornerstone); cardiac monitoring; fall precautions',t:'IV normal saline; bisphosphonates; furosemide after hydration; surgery (adenoma)',m:'Stones Bones Groans Moans = hypercalcemia. Treat with IV HYDRATION first.'},
+{n:'Diabetes Mellitus',s:'endo',e:'🩸',h:'3 Ps: Polyuria + Polydipsia + Polyphagia + fatigue + slow healing',d:'Hypoglycemia (BG <70) = most acute danger; DKA (T1); HHS (T2)',p:'BG monitoring; hypoglycemia 15-15 rule; foot care education',t:'T1: basal-bolus insulin. T2: metformin first then step-up agents',m:'3 Ps: Polyuria Polydipsia Polyphagia. Hypoglycemia = most acute danger.'},
+{n:'DKA',s:'endo',e:'🔬',h:'Fruity breath + Kussmaul breathing + glucose >300 + ketones + acidosis',d:'Hypokalemia from insulin (fatal if K+ not replaced); cerebral edema in children',p:'IV FLUIDS first → check K+ → insulin (only if K+ ≥3.5) → K+ replacement',t:'NS → Regular insulin drip → K+ → add D5W when glucose <200',m:'DKA: FLUIDS → check K+ → Insulin (K+ must be ≥3.5!) → K+ replacement'},
+{n:'HHS',s:'endo',e:'🌵',h:'Glucose >600 + profound dehydration + neuro changes + NO ketones',d:'DVT/PE from hyperviscosity; seizures; death',p:'Aggressive IV fluids; correct glucose slowly; DVT prophylaxis',t:'Large-volume IV fluids; insulin (lower dose than DKA); DVT prophylaxis',m:'HHS: Very High glucose + Hyperosmolar + No ketones. Elderly T2DM. Hydrate hard.'},
+{n:'Diabetes Insipidus',s:'endo',e:'💧',h:'Massive dilute urine output + high serum Na+ + low urine specific gravity',d:'Severe hypernatremia (Na+ >155) → seizures; hypovolemic shock',p:'Replace fluid output volume for volume; desmopressin for central DI',t:'Fluid replacement; desmopressin (DDAVP) intranasal or IV for central DI',m:'DI = Dilute urine + ↑Na+ + ↑serum osmolality. Opposite of SIADH in every way.'},
+{n:'SIADH',s:'endo',e:'🚿',h:'Low Na+ + concentrated urine + NO edema (fluid is intracellular)',d:'Rapid Na+ correction → central pontine myelinolysis (permanent damage)',p:'Fluid RESTRICTION; correct Na+ max 8 mEq/L per 24h; seizure precautions',t:'Fluid restriction 800–1200 mL/day; hypertonic saline only if severe/symptomatic',m:'SIADH: concentrated urine + LOW Na + No edema. FLUID RESTRICT. Correct SLOWLY.'},
+{n:'Addison\'s Disease',s:'endo',e:'🌘',h:'Hyperpigmentation + hypotension + LOW Na + HIGH K + hypoglycemia',d:'Addisonian crisis: severe hypotension + vomiting + shock → death',p:'Cortisol + aldosterone replacement; stress dosing education; medical alert ID',t:'Hydrocortisone + fludrocortisone; lifelong; carry injectable kit for emergencies',m:'Addison\'s: ADD cortisol back. Low Na, High K, Hyperpigmentation. Stress dose!'},
+{n:'Cushing Syndrome',s:'endo',e:'🌔',h:'Moon face + buffalo hump + purple striae + truncal obesity + HTN + hyperglycemia',d:'Infection (masked by immunosuppression); pathological fractures; adrenal crisis if steroids stopped abruptly',p:'NEVER abruptly stop steroids; monitor glucose + infection signs; bone protection',t:'Taper steroids gradually (exogenous); transsphenoidal surgery (pituitary adenoma)',m:'Cushing\'s = too much cortisol. Moon + Buffalo + Purple striae + HTN + ↑glucose.'},
+// GI (11)
+{n:'Crohn\'s Disease',s:'gi',e:'🔗',h:'RLQ pain + non-bloody diarrhea + skip lesions + weight loss + fistulas',d:'Intestinal obstruction; perforation; fistula formation; abscess',p:'Nutritional support; monitor for obstruction; anti-inflammatory therapy',t:'Mesalamine + corticosteroids (flares) + biologics; surgery NOT curative',m:'Crohn\'s: Skip lesions + Any GI segment + Non-bloody + Fistulas + RLQ pain.'},
+{n:'Ulcerative Colitis',s:'gi',e:'🩹',h:'Bloody diarrhea + urgency + tenesmus + continuous rectal involvement',d:'Toxic megacolon: distension + fever + sudden decrease in diarrhea → emergency',p:'Bowel rest if severe; monitor for toxic megacolon; corticosteroids for flare',t:'Mesalamine + corticosteroids + biologics; colectomy = CURATIVE',m:'UC: Bloody + Rectal + Continuous. Colectomy = cure. Toxic megacolon = emergency.'},
+{n:'Appendicitis',s:'gi',e:'🎯',h:'Periumbilical pain migrating to RLQ (McBurney\'s) + fever + elevated WBC',d:'Perforation → peritonitis → sepsis (within 24–72h if untreated)',p:'NPO; IV fluids; analgesics (OK); NO laxatives, NO enemas, NO heat to abdomen',t:'Appendectomy (laparoscopic); IV antibiotics perioperatively',m:'Appendicitis: Pain migrates Periumbilical → RLQ. NO heat. NO laxatives. Surgery.'},
+{n:'Pancreatitis',s:'gi',e:'🔥',h:'Severe epigastric pain radiating to BACK + elevated lipase + N/V',d:'ARDS; hypocalcemia (saponification); hemorrhagic pancreatitis (Cullen\'s/Grey Turner\'s)',p:'NPO; aggressive IV fluids; opioid analgesia; monitor calcium and respiratory status',t:'Supportive: fluids + pain + bowel rest; early enteral nutrition preferred over TPN',m:'Pancreatitis: Epigastric → Back + ↑Lipase. GET = Gallstones + Ethanol + Trauma.'},
+{n:'Cholecystitis',s:'gi',e:'🫘',h:'RUQ pain after fatty meals + Murphy\'s sign + fever + N/V',d:'Perforation; empyema; Charcot\'s triad (ascending cholangitis = emergency)',p:'NPO; IV fluids; opioid analgesics; antibiotics; surgical preparation',t:'Laparoscopic cholecystectomy; IV antibiotics for infectious cholecystitis',m:'Cholecystitis: RUQ + Murphy\'s sign + Fatty food trigger. 4 F\'s risk factors.'},
+{n:'Peptic Ulcer Disease',s:'gi',e:'🕳️',h:'Burning epigastric pain with meal pattern; melena = GI bleeding sign',d:'GI hemorrhage; perforation (rigid abdomen = emergency)',p:'Assess hemodynamic status; NPO if bleeding; IV PPI; stop NSAIDs; H. pylori test',t:'PPIs; H. pylori triple therapy; avoid NSAIDs/alcohol/tobacco',m:'PUD: Duodenal = better with food. Gastric = worse with food. Melena = upper GI bleed.'},
+{n:'Bowel Obstruction',s:'gi',e:'🚧',h:'Crampy pain + distension + obstipation (no flatus) + tinkling bowel sounds',d:'Strangulation → ischemia → perforation → peritonitis (fever + peritoneal signs)',p:'NPO; NG tube for decompression; IV fluids; surgical consult; monitor strangulation signs',t:'Partial: conservative (NPO + NG). Complete/strangulated: IMMEDIATE surgery',m:'Obstruction: No flatus + Distension + Tinkling sounds. NG tube decompresses.'},
+{n:'Cirrhosis',s:'gi',e:'🫀',h:'Ascites + jaundice + spider angiomas + coagulopathy + splenomegaly',d:'Variceal hemorrhage (hematemesis = emergency); hepatic encephalopathy',p:'No alcohol ever; low-sodium diet; diuretics; monitor for variceal bleeding',t:'Diuretics + propranolol (variceal prevention) + lactulose; liver transplant = only cure',m:'Cirrhosis: Ascites + Jaundice + Spider angiomas + Coagulopathy. Varices = most dangerous.'},
+{n:'Hepatic Encephalopathy',s:'gi',e:'🌀',h:'Asterixis (flapping tremor) + confusion + elevated ammonia + precipitant',d:'Progressive coma; aspiration; brain herniation',p:'Find and treat precipitant; lactulose (target 2–3 stools/day); aspiration/fall precautions',t:'Lactulose titrated to 2–3 stools/day; rifaximin; treat precipitating cause',m:'HE: Asterixis + Ammonia. Lactulose traps NH3. Find the precipitant!'},
+{n:'Cholecystitis',s:'gi',e:'🫘',h:'RUQ pain + Murphy\'s sign + after fatty meal + fever',d:'Ascending cholangitis (Charcot\'s triad = emergency)',p:'NPO; IV fluids; antibiotics; surgical prep',t:'Laparoscopic cholecystectomy; antibiotics',m:'4 F\'s: Fat Female Forty Fertile. Murphy\'s sign = pathognomonic.'},
+{n:'Diverticulitis',s:'gi',e:'💢',h:'LLQ pain + fever + elevated WBC in older patient ("left-sided appendicitis")',d:'Perforation; abscess; fistula (colovesical most common)',p:'NPO or clear liquids; IV antibiotics; surgical consult if complicated',t:'Mild: oral antibiotics + liquid diet. Complicated: IV antibiotics ± surgery',m:'Diverticulitis: LLQ + Fever + Older. Left-sided appendicitis. Clear liquids + antibiotics.'},
+// CARDIO (9)
+{n:'Heart Failure',s:'cardio',e:'❤️',h:'Orthopnea + JVD + bilateral crackles + daily weight gain',d:'Acute pulmonary edema (pink frothy sputum = emergency)',p:'HIGH FOWLER\'S first; O₂; IV furosemide; daily weights monitoring',t:'Furosemide + ACE-I + beta-blocker + spironolactone; Na/fluid restriction',m:'HF: HIGH FOWLER\'S + O₂ + Furosemide. Daily weight = #1 monitoring tool.'},
+{n:'Myocardial Infarction',s:'cardio',e:'💔',h:'Crushing chest pressure + radiation to jaw/arm + diaphoresis + SOB',d:'Cardiogenic shock; ventricular fibrillation; papillary muscle rupture',p:'12-lead EKG within 10 min; aspirin (chew); activate cath lab for STEMI',t:'Primary PCI <90 min (STEMI); antiplatelet + anticoagulation; O₂ only if <90%',m:'MI: EKG in 10 min. Aspirin FIRST (chew). NO nitro with Viagra. O₂ only if <90%.'},
+{n:'Pericarditis',s:'cardio',e:'🫀',h:'Sharp pain BETTER leaning forward + pericardial friction rub + low-grade fever',d:'Pericardial effusion → cardiac tamponade (Beck\'s triad = emergency)',p:'Sit upright or lean forward; NSAIDs + colchicine; restrict activity × 3 months',t:'NSAIDs + colchicine; avoid steroids (increase recurrence); rest × 3 months',m:'Pericarditis: Pain BETTER leaning forward. Friction rub. Diffuse saddle ST + PR drop.'},
+{n:'Cardiac Tamponade',s:'cardio',e:'🫐',h:'Beck\'s Triad: JVD + Hypotension + Muffled heart sounds + pulsus paradoxus',d:'Cardiac arrest without immediate pericardiocentesis',p:'EMERGENCY: pericardiocentesis STAT; IV fluids as bridge; NEVER diuretics',t:'Pericardiocentesis (needle drainage); surgery for traumatic/recurrent',m:'Tamponade: Beck\'s Triad. Drain it NOW. NO diuretics — ever.'},
+{n:'Infective Endocarditis',s:'cardio',e:'🦠',h:'Fever + new murmur + Osler\'s (painful) + Janeway (painless) + splinter hemorrhages',d:'Embolic stroke; valve destruction → heart failure',p:'Blood cultures × 3 BEFORE antibiotics (never skip this); IV antibiotics 4–6 weeks',t:'IV antibiotics 4–6 weeks; surgery for severe valve damage',m:'Endocarditis: Fever + New murmur. Osler\'s = painful. Janeway = painless. Cultures × 3 FIRST.'},
+{n:'Hypertension',s:'cardio',e:'📈',h:'Usually ASYMPTOMATIC — "the silent killer"',d:'Hypertensive emergency (BP >180/110 + organ damage) → ICU',p:'Lifestyle modification; medication adherence; home BP monitoring',t:'ACE-I/ARBs + CCBs + thiazides; hypertensive emergency: IV labetalol',m:'HTN: Silent killer. Target <130/80. Emergency = organ damage = IV treatment.'},
+{n:'Cardiogenic Shock',s:'cardio',e:'⬇️',h:'Post-MI + BP <90 + cool clammy skin + oliguria + AMS',d:'Multi-organ failure; cardiac arrest; death (~60% mortality without treatment)',p:'ICU; vasopressors (norepinephrine); inotropes (dobutamine); emergent PCI',t:'Vasopressors + inotropes + IABP; emergent revascularization; avoid fluids',m:'Cardiogenic Shock: Hypotension + Cool clammy + Oliguria post-MI. Vasopressors + Inotropes.'},
+{n:'Deep Vein Thrombosis',s:'cardio',e:'🦵',h:'Unilateral leg pain + swelling + warmth + low-grade fever (50% asymptomatic)',d:'Pulmonary embolism from clot dislodgement',p:'NEVER massage; elevate leg; anticoagulation; monitor for PE (sudden dyspnea)',t:'DOACs (rivaroxaban, apixaban) or LMWH; warfarin (INR 2–3) long-term',m:'DVT: Virchow\'s triad. NEVER massage. Anticoagulate. Watch for PE.'},
+{n:'Pulmonary Embolism',s:'cardio',e:'🫁',h:'SUDDEN dyspnea + tachycardia + pleuritic chest pain + hypoxia post-DVT',d:'Hemodynamic collapse (massive PE) → cardiac arrest',p:'O₂ immediately; IV heparin; CT pulmonary angiography STAT; tPA if unstable',t:'Heparin → DOACs long-term; tPA for massive PE with instability',m:'PE: Sudden dyspnea + Tachycardia + Pleuritic pain + Hypoxia. O₂ → Heparin → CT-PA.'},
+// RESP (6)
+{n:'Asthma',s:'resp',e:'💨',h:'Wheezing + prolonged expiration + reversible obstruction + triggers',d:'SILENT CHEST (no wheeze) = pre-respiratory arrest — most dangerous finding',p:'Tripod position; ALBUTEROL first; O₂ if SpO₂ <95%; steroids; Mg sulfate',t:'SABA (rescue) + ICS (controller); step-up therapy; avoid triggers',m:'Asthma: Wheezing + Reversible + Triggers. Albuterol first. Silent chest = EMERGENCY.'},
+{n:'COPD',s:'resp',e:'🌬️',h:'Chronic dyspnea + barrel chest + prolonged expiration + smoker history',d:'CO₂ narcosis from excessive O₂; respiratory failure; cor pulmonale',p:'O₂ target 88–92% (NOT 100%); SABA + SAMA; systemic steroids; antibiotics',t:'SABA + LAMA + LABA maintenance; smoking cessation = most important',m:'COPD: Irreversible + Smoker + Barrel chest. O₂ at 88–92%. Hypoxic drive at risk.'},
+{n:'Pneumonia',s:'resp',e:'🫁',h:'Fever + productive cough + crackles + CXR consolidation',d:'Sepsis; respiratory failure; ARDS',p:'Cultures (sputum + blood) BEFORE antibiotics; O₂; semi-Fowler\'s; incentive spirometry',t:'Azithromycin/doxycycline (CAP); vancomycin + piperacillin-tazobactam (HAP)',m:'Pneumonia: Culture BEFORE antibiotics. Elderly: confusion = only sign. Fever + crackles.'},
+{n:'Tuberculosis',s:'resp',e:'🦠',h:'Chronic cough + hemoptysis + night sweats + weight loss + upper lobe cavitation',d:'MDR-TB; hemoptysis; miliary (disseminated) TB',p:'AIRBORNE precautions immediately; N95; negative pressure room; sputum AFB × 3',t:'RIPE × 2 months then RI × 4 months; DOT required; B6 with INH',m:'TB: AIRBORNE. RIPE therapy. Night sweats + upper lobe. B6 with INH. Orange urine = rifampin.'},
+{n:'Pulmonary Edema',s:'resp',e:'🌊',h:'PINK FROTHY SPUTUM + severe hypoxia + bilateral crackles = emergency',d:'Respiratory arrest; cardiac arrest',p:'HIGH FOWLER\'S immediately; high-flow O₂/CPAP; IV furosemide; IV nitroglycerin',t:'Furosemide + nitroglycerin + O₂/CPAP; treat underlying cardiac cause',m:'Pulm Edema: PINK FROTHY SPUTUM. HIGH FOWLER\'S + O₂ + Furosemide + Nitro.'},
+{n:'ARDS',s:'resp',e:'🫧',h:'Refractory hypoxia + bilateral infiltrates + normal BNP + precipitant within 1 week',d:'Multi-organ failure; death (~30–40% mortality)',p:'Mechanical ventilation; LOW tidal volume (6 mL/kg IBW); prone positioning',t:'Lung-protective ventilation; prone positioning 12–16h/day; treat precipitant',m:'ARDS: Acute + Bilateral + Refractory + Non-cardiac. Low Vt (6 mL/kg). Prone positioning.'},
+// NEURO (6)
+{n:'Stroke (CVA)',s:'neuro',e:'🧠',h:'FAST: Face drop + Arm weak + Speech difficulty + Time to call 911',d:'Brain herniation; hemorrhagic transformation post-tPA; aspiration pneumonia',p:'FAST assessment; CT head STAT; check glucose; stroke team; NPO until dysphagia screen',t:'tPA if ischemic + <4.5h + no hemorrhage on CT; mechanical thrombectomy',m:'Stroke: FAST. CT first (no contrast). tPA if ischemic + <4.5h. Time = brain.'},
+{n:'Increased ICP',s:'neuro',e:'⬆️',h:'Cushing\'s Triad (LATE): ↑↑BP + Bradycardia + Irregular respirations = herniation',d:'Transtentorial herniation; brain death',p:'HOB 30°; avoid Valsalva/coughing/straining; mannitol; quiet environment; neurosurgery STAT',t:'HOB 30°; mannitol or 3% saline; hyperventilation (temporary); treat cause',m:'↑ICP: HOB 30° + Quiet + Mannitol. Cushing\'s Triad = LATE = EMERGENCY.'},
+{n:'Meningitis',s:'neuro',e:'🦠',h:'Headache + Fever + Nuchal rigidity (classic triad) + photophobia',d:'Petechiae = meningococcal = code-level emergency; herniation; hearing loss',p:'DROPLET precautions; dexamethasone THEN antibiotics within 1 hour; cultures first',t:'Ceftriaxone + vancomycin; dexamethasone before antibiotics; droplet precautions',m:'Meningitis: Headache + Fever + Nuchal rigidity. Steroids BEFORE antibiotics. Petechiae = EMERGENCY.'},
+{n:'Seizure Disorder',s:'neuro',e:'⚡',h:'Tonic-clonic → postictal (confusion, sleepiness) — time the seizure',d:'Status epilepticus (>5 min) → permanent neuronal injury; aspiration',p:'TIME it; side position; protect; NO restraint; NOTHING in mouth; lorazepam if >5 min',t:'Lorazepam (status); maintenance antiseizure meds; driving restriction',m:'Seizure: TIME IT. Side. No restraint. Nothing in mouth. Status >5 min = lorazepam NOW.'},
+{n:'Parkinson\'s Disease',s:'neuro',e:'🤝',h:'TRAP: Tremor (resting pill-rolling) + Rigidity + Akinesia + Postural instability',d:'Falls (most common serious complication); aspiration pneumonia (leading cause of death)',p:'FALL PRECAUTIONS #1; aspiration precautions; consistent levodopa timing (critical)',t:'Levodopa/carbidopa (mainstay); dopamine agonists; DBS for advanced disease',m:'Parkinson\'s: TRAP. FALL RISK #1. Levodopa timing critical — missed dose = severe freezing.'},
+{n:'Myasthenia Gravis',s:'neuro',e:'😮',h:'Ptosis worsening with activity + improves with rest; dysphagia; worsens in evening',d:'Myasthenic crisis: respiratory failure (VC <1L = intubation)',p:'AIRWAY monitoring; pyridostigmine on time with meals; avoid aminoglycosides',t:'Pyridostigmine; immunosuppression; thymectomy; IVIG/plasmapheresis for crisis',m:'MG: Worse with activity, better with rest. Ptosis. Pyridostigmine. Watch AIRWAY.'},
+// RENAL (4)
+{n:'Acute Kidney Injury',s:'renal',e:'💧',h:'Oliguria <30 mL/hr + rising creatinine + hyperkalemia (most dangerous)',d:'Hyperkalemia → VF and cardiac arrest; pulmonary edema; uremia',p:'K+ and EKG IMMEDIATELY; stop nephrotoxins; fluid assessment; strict hourly I&O',t:'Prerenal: IV fluids. Intrinsic: treat cause. Postrenal: relieve obstruction. Dialysis if severe.',m:'AKI: Oliguria + ↑Cr + ↑K+. K+ is the most acute threat. Stop nephrotoxins first.'},
+{n:'Chronic Kidney Disease',s:'renal',e:'🌀',h:'Progressive ↓GFR + anemia + ↑K+ + ↑PO4 + ↓Ca + uremic symptoms',d:'Hyperkalemia; cardiovascular disease (leading cause of death); fluid overload',p:'Control BP (ACE-I/ARB); restrict K+/PO4/Na+/protein; avoid nephrotoxins',t:'ACE-I/ARB + glycemic control + ESAs for anemia + phosphate binders; dialysis at GFR <15',m:'CKD: DM + HTN = #1 causes. ↑K+ ↑PO4 ↓Ca anemia. NO NSAIDs. Dietary restrictions.'},
+{n:'UTI (Cystitis)',s:'renal',e:'🔥',h:'Dysuria + frequency + urgency + cloudy urine — ELDERLY: confusion may be ONLY sign',d:'Ascending infection → pyelonephritis → urosepsis',p:'Urine culture BEFORE antibiotics; fluids; monitor for progression to pyelonephritis',t:'TMP-SMX or nitrofurantoin (3–5 days); nitrofurantoin for LOWER UTI only',m:'UTI: Dysuria + Frequency + Urgency. ELDERLY = confusion only. Culture FIRST.'},
+{n:'Pyelonephritis',s:'renal',e:'🔥',h:'HIGH fever + CVA tenderness (flank percussion pain) + systemic illness',d:'Urosepsis; preterm labor (pregnancy); renal abscess',p:'Urine + blood cultures BEFORE antibiotics; IV antibiotics; monitor for sepsis',t:'IV ciprofloxacin or ceftriaxone; oral step-down when afebrile; 10–14 days total',m:'Pyelonephritis: FEVER + CVA tenderness + systemic. Upper UTI. IV antibiotics. Watch for sepsis.'},
+// HEME/IMMUNE (6)
+{n:'Iron Deficiency Anemia',s:'heme',e:'🩸',h:'Fatigue + pallor + pica (ice craving) + koilonychia + low MCV + low ferritin',d:'Cardiac failure from severe chronic anemia; cognitive impairment in children',p:'Identify and treat underlying cause (blood loss); iron supplementation',t:'Ferrous sulfate 325 mg + vitamin C; treat underlying cause; IV iron if oral not tolerated',m:'IDA: Microcytic + ↓Ferritin + Pica + Pallor. Iron + Vitamin C. Black stool = normal.'},
+{n:'Sickle Cell Crisis',s:'heme',e:'🌙',h:'Severe bone/joint/chest pain + fever in sickle cell patient',d:'Acute chest syndrome (ACS) = #1 cause of death; stroke; splenic sequestration',p:'IV fluids (hydration key); opioid analgesia; O₂ if <95%; warm; monitor for ACS',t:'Hydration + opioids + O₂ + warmth; hydroxyurea long-term; exchange transfusion for ACS/stroke',m:'Sickle Cell: Hydrate + Warm + O₂ + Opioids. ACS = most deadly. Exchange transfusion.'},
+{n:'DIC',s:'heme',e:'⚠️',h:'Bleeding from MULTIPLE sites simultaneously + prolonged PT/PTT + low platelets + low fibrinogen',d:'Hemorrhagic stroke; multi-organ failure; death',p:'TREAT THE CAUSE first; bleeding precautions; minimize invasive procedures',t:'Treat cause + FFP + cryoprecipitate + platelets + RBC transfusion',m:'DIC: BLEED and CLOT simultaneously. Treat the CAUSE first. FFP + Cryo + Platelets.'},
+{n:'Anaphylaxis',s:'heme',e:'🚨',h:'Urticaria + stridor + hypotension + wheezing after allergen exposure',d:'Laryngeal edema → complete airway obstruction; cardiac arrest',p:'EPINEPHRINE 0.3 mg IM FIRST — always. Then airway, O₂, fluids, Benadryl (secondary)',t:'Epinephrine IM (first) + O₂ + IV fluids; Benadryl + steroids secondary; observe 4–8h',m:'Anaphylaxis: Epinephrine FIRST. Always. Period. Benadryl/steroids are SECONDARY.'},
+{n:'Rheumatoid Arthritis',s:'heme',e:'🦴',h:'Symmetric small joint pain + morning stiffness >1 HOUR + positive RF',d:'Atlantoaxial subluxation (cord compression); infection (immunosuppressed)',p:'Joint protection; pain management; infection precautions; fall risk',t:'Methotrexate (first-line DMARD) + folic acid; biologics (anti-TNF); NSAIDs for symptoms',m:'RA: Symmetric + Small joints + Morning stiffness >1h + RF+. MTX first-line. Folic acid with MTX.'},
+{n:'Osteoporosis',s:'heme',e:'🦷',h:'Asymptomatic until fracture; height loss; kyphosis; T-score ≤ -2.5',d:'Hip fracture (30% 1-year mortality from immobility complications)',p:'FALL PREVENTION #1; bisphosphonates; calcium + vitamin D; weight-bearing exercise',t:'Alendronate (sit upright 30–60 min after); zoledronic acid; calcium + Vit D',m:'Osteoporosis: T-score <-2.5. Fall prevention #1. Bisphosphonates + Ca + Vit D. Upright 30 min.'}
+];
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+function showSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector(`.nt[data-s="${id}"]`).classList.add('active');
+}
+document.querySelectorAll('.nt').forEach(t=>t.addEventListener('click',()=>showSec(t.dataset.s)));
+
+// ══════════════════════════════════════════
+// CASE STUDIES LOGIC
+// ══════════════════════════════════════════
+let csScore=0,csAtt=0;
+const csAnswered=new Set();
+
+function updateCSScore(){
+  document.getElementById('cs-score').textContent=csScore;
+  document.getElementById('cs-att').textContent=csAtt;
+  const pct=CASES.length>0?(csAtt/CASES.length)*100:0;
+  document.getElementById('cs-prog').style.width=pct+'%';
+}
+
+function buildCases(){
+  const wrap=document.getElementById('cases-wrap');
+  wrap.innerHTML='';
+  CASES.forEach((c,ci)=>{
+    const div=document.createElement('div');
+    div.className='case-card';div.id='case-'+c.id;
+    const vitH=c.vitals.map(v=>`<div class="vital"><strong>${v[0]}:</strong> ${v[1]}</div>`).join('');
+    const optH=c.opts.map((o,i)=>`<button class="opt" onclick="answerCase('${c.id}',${i},${c.ans},this)">${o}</button>`).join('');
+    div.innerHTML=`
+      <div class="case-hd" style="background:${c.bg}">
+        <div class="case-num">Case ${c.num} · ${c.sys.toUpperCase()}</div>
+        <div class="case-title">${c.title}</div>
+      </div>
+      <div class="case-body">
+        <p class="case-stem">${c.stem}</p>
+        <div class="vitals-row">${vitH}</div>
+        <div class="q-stem">❓ ${c.q}</div>
+        <div id="opts-${c.id}">${optH}</div>
+        <div class="rationale" id="rat-${c.id}">
+          <div class="rat-correct">✅ <strong>Correct Answer: ${c.opts[c.ans]}</strong><br><br>${c.rationale}</div>
+          ${c.opts.map((_,i)=>i!==c.ans?`<div class="rat-box">❌ <strong>${c.opts[i]}:</strong> ${c.wr[String(i)]||'See rationale above.'}</div>`:'').join('')}
+          <div class="ib ib-blue" style="margin-top:10px"><strong>💡 Why this clue matters:</strong> ${c.clue}</div>
+          <div class="ib ib-green"><strong>🧠 What the nurse should think:</strong> ${c.think}</div>
+          <div class="ib ib-red"><strong>⚠️ What makes this case dangerous:</strong> ${c.danger}</div>
+        </div>
+      </div>`;
+    wrap.appendChild(div);
+  });
+  updateCSScore();
+}
+
+function answerCase(cid,chosen,correct,btn){
+  if(csAnswered.has(cid))return;
+  csAnswered.add(cid);csAtt++;
+  const oc=document.getElementById('opts-'+cid);
+  oc.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  if(chosen===correct){btn.classList.add('correct');csScore++;}
+  else{btn.classList.add('wrong');oc.querySelectorAll('.opt')[correct].classList.add('show-correct');}
+  document.getElementById('rat-'+cid).classList.add('show');
+  updateCSScore();
+}
+
+function resetCases(){
+  csScore=0;csAtt=0;csAnswered.clear();
+  buildCases();updateCSScore();
+}
+
+// ══════════════════════════════════════════
+// CONCEPT CHECKS LOGIC
+// ══════════════════════════════════════════
+let ccScore=0,ccAtt=0,ccTotal=0;
+const ccAnswered=new Set();
+
+function updateCCScore(){
+  document.getElementById('cc-score').textContent=ccScore;
+  document.getElementById('cc-att').textContent=ccAtt;
+  document.getElementById('cc-tot').textContent=ccTotal;
+  const pct=ccTotal>0?(ccAtt/ccTotal)*100:0;
+  document.getElementById('cc-prog').style.width=pct+'%';
+}
+
+function buildCC(){
+  const wrap=document.getElementById('cc-wrap');
+  wrap.innerHTML='';ccTotal=0;
+  let qi=0;
+  CC_DATA.forEach(sec=>{
+    const sdiv=document.createElement('div');
+    sdiv.className='cc-section';
+    sdiv.innerHTML=`<div class="cc-hdr">${sec.sec}</div>`;
+    sec.qs.forEach(q=>{
+      const qid='cc'+qi;qi++;ccTotal++;
+      const qdiv=document.createElement('div');
+      qdiv.className='cc-q';
+      const optH=q.opts.map((o,i)=>`<button class="opt" onclick="answerCC('${qid}',${i},${q.ans},this)">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
+      qdiv.innerHTML=`
+        <div class="q-text">Q${qi}. ${q.q}</div>
+        <div id="ccopts-${qid}">${optH}</div>
+        <div class="rationale" id="ccrat-${qid}">
+          <div class="rat-correct">✅ <strong>Correct: ${q.opts[q.ans]}</strong><br><br>${q.exp}</div>
+        </div>`;
+      sdiv.appendChild(qdiv);
+    });
+    wrap.appendChild(sdiv);
+  });
+  updateCCScore();
+}
+
+function answerCC(qid,chosen,correct,btn){
+  if(ccAnswered.has(qid))return;
+  ccAnswered.add(qid);ccAtt++;
+  const oc=document.getElementById('ccopts-'+qid);
+  oc.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  if(chosen===correct){btn.classList.add('correct');ccScore++;}
+  else{btn.classList.add('wrong');oc.querySelectorAll('.opt')[correct].classList.add('show-correct');}
+  document.getElementById('ccrat-'+qid).classList.add('show');
+  updateCCScore();
+}
+
+function resetCC(){
+  ccScore=0;ccAtt=0;ccAnswered.clear();
+  buildCC();
+}
+
+// ══════════════════════════════════════════
+// RAPID REVIEW LOGIC
+// ══════════════════════════════════════════
+const SYS_COLORS={psych:'var(--pink)',endo:'var(--green)',gi:'var(--orange)',cardio:'var(--red)',resp:'var(--blue)',neuro:'var(--purple)',renal:'var(--teal)',heme:'var(--amber)'};
+let currentRRFilter='all';
+
+function buildRRFilters(){
+  const fr=document.getElementById('rr-filter-row');
+  const filters=[
+    {key:'all',label:'All 66',cls:'active-all'},
+    {key:'psych',label:'🧠 Psych',cls:'active-psych'},
+    {key:'endo',label:'🌿 Endo',cls:'active-endo'},
+    {key:'gi',label:'🍊 GI',cls:'active-gi'},
+    {key:'cardio',label:'❤️ Cardiac',cls:'active-cardio'},
+    {key:'resp',label:'💨 Resp',cls:'active-resp'},
+    {key:'neuro',label:'🔮 Neuro',cls:'active-neuro'},
+    {key:'renal',label:'💧 Renal',cls:'active-renal'},
+    {key:'heme',label:'🩸 Heme',cls:'active-heme'}
+  ];
+  filters.forEach(f=>{
+    const btn=document.createElement('button');
+    btn.className='fbtn'+(f.key==='all'?' '+f.cls:'');
+    btn.textContent=f.label;
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#rr-filter-row .fbtn').forEach(b=>{
+        b.className='fbtn';
+      });
+      btn.classList.add(f.cls);
+      currentRRFilter=f.key;
+      renderRR();renderFC();
+    });
+    fr.appendChild(btn);
+  });
+}
+
+function renderRR(){
+  const grid=document.getElementById('rr-grid');
+  grid.innerHTML='';
+  const data=currentRRFilter==='all'?RR_ALL:RR_ALL.filter(r=>r.s===currentRRFilter);
+  data.forEach(r=>{
+    const card=document.createElement('div');
+    card.className='rr-card';
+    card.style.borderTopColor=SYS_COLORS[r.s]||'#ccc';
+    card.innerHTML=`
+      <div class="rr-hd">
+        <span style="font-size:1.1rem">${r.e}</span>
+        <div class="rr-name">${r.n}</div>
+        <span class="bdg bdg-${r.s}">${r.s}</span>
+      </div>
+      <div class="rr-body">
+        <div class="rr-row"><span class="rr-icon">🔑</span><div><strong>Hallmark:</strong> ${r.h}</div></div>
+        <div class="rr-row"><span class="rr-icon">🚨</span><div><strong>Major Danger:</strong> ${r.d}</div></div>
+        <div class="rr-row"><span class="rr-icon">⚡</span><div><strong>First Priority:</strong> ${r.p}</div></div>
+        <div class="rr-row"><span class="rr-icon">💊</span><div><strong>Treatment:</strong> ${r.t}</div></div>
+        <div style="background:${SYS_COLORS[r.s]}18;border-radius:6px;padding:7px 9px;margin-top:6px;font-size:.78rem;color:#334155;border-left:3px solid ${SYS_COLORS[r.s]}">
+          🧠 <strong>Memory Aid:</strong> ${r.m}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
+// FLASHCARD LOGIC
+// ══════════════════════════════════════════
+let fcIndex=0;
+let fcData=[];
+
+function renderFC(){
+  fcData=currentRRFilter==='all'?RR_ALL:RR_ALL.filter(r=>r.s===currentRRFilter);
+  if(fcData.length===0)return;
+  fcIndex=Math.min(fcIndex,fcData.length-1);
+  showFC();
+}
+
+function showFC(){
+  const area=document.getElementById('fc-area');
+  const r=fcData[fcIndex];
+  const color=SYS_COLORS[r.s]||'#1d4ed8';
+  area.innerHTML=`
+    <div class="fc-wrap" onclick="this.querySelector('.fc-inner').classList.toggle('flipped')">
+      <div class="fc-inner">
+        <div class="fc-front" style="background:linear-gradient(135deg,${color},${color}bb)">
+          <div class="fc-label">What is the hallmark + first priority?</div>
+          <div class="fc-main">${r.e} ${r.n}</div>
+          <div class="fc-hint">Click to reveal answer</div>
+        </div>
+        <div class="fc-back" style="background:linear-gradient(135deg,${color}dd,${color})">
+          <div class="fc-label">Hallmark · Priority · Memory Aid</div>
+          <div class="fc-main" style="font-size:.82rem;font-family:'DM Sans',sans-serif;font-weight:600;text-align:left;width:100%">
+            <div style="margin-bottom:6px">🔑 <strong>Hallmark:</strong> ${r.h}</div>
+            <div style="margin-bottom:6px">⚡ <strong>First Priority:</strong> ${r.p}</div>
+            <div>🧠 ${r.m}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('fc-counter').textContent=`Card ${fcIndex+1} / ${fcData.length}`;
+}
+
+function nextFC(){
+  if(fcData.length===0)return;
+  fcIndex=(fcIndex+1)%fcData.length;
+  showFC();
+}
+
+function prevFC(){
+  if(fcData.length===0)return;
+  fcIndex=(fcIndex-1+fcData.length)%fcData.length;
+  showFC();
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  buildCases();
+  buildCC();
+  buildRRFilters();
+  renderRR();
+  fcData=[...RR_ALL];
+  renderFC();
+});
+</script>
+</body>
+</html>
